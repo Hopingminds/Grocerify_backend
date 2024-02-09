@@ -25,7 +25,7 @@ export async function generateMobileOTP(req, res) {
 }
 
 
-/** POST: http://localhost:8080/api/generateMobileOTP 
+/** POST: http://localhost:8080/api/verifyMobileOTP 
 * body : {
     "mobile" : "1234567890",
     "otp": 0197
