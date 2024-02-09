@@ -72,3 +72,44 @@ export async function getProductByName(req, res) {
 		return res.status(404).send({ error: 'Cannot Find Product Data' })
 	}
 }
+
+/** PUT: http://localhost:8080/api/addToCart 
+ * @param: {
+    "header" : "<token>"
+}
+body: {
+    firstName: '',
+    address : '',
+    profile : ''
+}
+*/
+export async function addToCart(req, res) {
+	try {
+		const { userID } = req.user;
+		const body = req.body
+		if (!userID) return res.status(401).send({ error: 'Invalid User!' })
+
+		const updateUser = new Promise((resolve, reject) => {
+			// update the data
+			UserModel.updateOne({ _id: userID }, body)
+            .exec()
+            .then(()=>{
+                resolve()
+            })
+            .catch((error)=>{
+                throw error
+            })
+		})
+        
+        Promise.all([updateUser])
+        .then(()=>{
+            return res.status(201).send({ msg : "Record Updated"});
+        })
+        .catch((error) => {
+            return res.status(500).send({ error: error.message })
+        })
+
+	} catch (error) {
+		return res.status(401).send({ error })
+	}
+}

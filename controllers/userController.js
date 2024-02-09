@@ -7,11 +7,19 @@ import otpGenerator from 'otp-generator'
 // middleware for verify user
 export async function verifyUser(req, res, next) {
 	try {
-		const { username } = req.method == 'GET' ? req.query : req.body
+		const { email, mobile } = req.method == 'GET' ? req.query : req.body
 		// check the user existance
-		let exit = await UserModel.findOne({ username })
-		if (!exit) return res.status(404).send({ error: "Can't find user!" })
-		next()
+		if (email && !mobile) {
+			let exit = await UserModel.findOne({ email })
+			if (!exit) return res.status(404).send({ error: "Can't find user!" })
+			next()
+		}
+
+		else if (!email && mobile) {
+			let exit = await UserModel.findOne({ mobile })
+			if (!exit) return res.status(404).send({ error: "Can't find user!" })
+			next()	
+		}
 	} catch (error) {
 		return res.status(404).send({ error: 'Authentication Error' })
 	}
@@ -25,13 +33,12 @@ export async function verifyUser(req, res, next) {
     "firstName" : "bill",
     "lastName": "william",
     "mobile": 8009860560,
-    "address" : "Apt. 556, Kulas Light, Gwenborough",
-    "profile": ""
+    "profile": "" (not compuslory)
 }
 */
 export async function register(req, res) {
 	try {
-		const { username, password, profile, email } = req.body
+		const { username, password, email, profile, firstName, lastName, mobile } = req.body
 
 		// check the existing user
 		const existUsername = new Promise((resolve, reject) => {
@@ -50,6 +57,22 @@ export async function register(req, res) {
 		})
 
 		// check for existing email
+		const existMobile = new Promise((resolve, reject) => {
+			UserModel.findOne({ mobile })
+				.exec()
+				.then((mobile) => {
+					if (mobile) {
+						reject({ error: 'Please use a unique mobile' })
+					} else {
+						resolve()
+					}
+				})
+				.catch((err) => {
+					reject(new Error(err))
+				})
+		})
+		
+		// check for existing email
 		const existEmail = new Promise((resolve, reject) => {
 			UserModel.findOne({ email })
 				.exec()
@@ -65,7 +88,7 @@ export async function register(req, res) {
 				})
 		})
 
-		Promise.all([existUsername, existEmail])
+		Promise.all([existUsername, existMobile, existEmail])
 			.then(() => {
 				if (password) {
 					bcrypt
@@ -76,6 +99,9 @@ export async function register(req, res) {
 								password: hashedPassword,
 								profile: profile || '',
 								email,
+								firstName,
+								lastName,
+								mobile
 							})
 
 							// return save result as a response
@@ -104,16 +130,16 @@ export async function register(req, res) {
 	}
 }
 
-/** POST: http://localhost:8080/api/login 
+/** POST: http://localhost:8080/api/loginWithEmail 
 * @param : {
-    "username" : "example123",
+    "email" : "example123@mail.com",
     "password" : "admin123",
 }
 */
-export async function login(req, res) {
-	const { username, password } = req.body
+export async function loginWithEmail(req, res) {
+	const { email, password } = req.body
 	try {
-		UserModel.findOne({ username })
+		UserModel.findOne({ email })
 			.then((user) => {
 				bcrypt
 					.compare(password, user.password)
@@ -128,6 +154,7 @@ export async function login(req, res) {
 							{
 								userID: user._id,
 								username: user.username,
+								email: user.email,
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -135,6 +162,7 @@ export async function login(req, res) {
 						return res.status(200).send({
 							msg: 'Login Successful',
 							username: user.username,
+							email: user.email,
 							token,
 						})
 					})
@@ -145,7 +173,57 @@ export async function login(req, res) {
 					})
 			})
 			.catch((error) => {
-				return res.status(404).send({ error: 'Username not Found' })
+				return res.status(404).send({ error: 'Email not Found' })
+			})
+	} catch (error) {
+		return res.status(500).send(error)
+	}
+}
+
+/** POST: http://localhost:8080/api/loginWithMobile 
+* @param : {
+    "mobile" : "1234567890",
+    "password" : "admin123",
+}
+*/
+export async function loginWithMobile(req, res) {
+	const { mobile, password } = req.body
+	try {
+		UserModel.findOne({ mobile })
+			.then((user) => {
+				bcrypt
+					.compare(password, user.password)
+					.then((passwordCheck) => {
+						if (!passwordCheck)
+							return res
+								.status(400)
+								.send({ error: "Don't password" })
+
+						// create jwt token
+						const token = jwt.sign(
+							{
+								userID: user._id,
+								username: user.username,
+								email: user.email
+							},
+							ENV.JWT_SECRET,
+							{ expiresIn: '24h' }
+						)
+						return res.status(200).send({
+							msg: 'Login Successful',
+							username: user.username,
+							email: user.email,
+							token,
+						})
+					})
+					.catch((error) => {
+						return res
+							.status(400)
+							.send({ error: 'Password does not match' })
+					})
+			})
+			.catch((error) => {
+				return res.status(404).send({ error: 'Mobile not Found' })
 			})
 	} catch (error) {
 		return res.status(500).send(error)
@@ -193,10 +271,14 @@ export async function getUser(req, res) {
  * @param: {
     "header" : "<token>"
 }
-body: {
-    firstName: '',
-    address : '',
-    profile : ''
+body: { --pass only required fields
+    "username" : "example123",
+    "password" : "admin123",
+    "email": "example@gmail.com",
+    "firstName" : "bill",
+    "lastName": "william",
+    "mobile": 8009860560,
+    "profile": ""
 }
 */
 export async function updateUser(req, res) {
@@ -230,14 +312,20 @@ export async function updateUser(req, res) {
 	}
 }
 
-/** GET: http://localhost:8080/api/generateOTP */
-export async function generateOTP(req, res) {
+/** GET: http://localhost:8080/api/generateRestPwdOTP 
+body: {
+	--pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+}
+*/
+export async function generateRestPwdOTP(req, res) {
 	req.app.locals.OTP = await otpGenerator.generate(4, {lowerCaseAlphabets: false, upperCaseAlphabets:false, specialChars:false})
     res.status(201).send({code:req.app.locals.OTP})
 }
 
-/** GET: http://localhost:8080/api/verifyOTP  */
-export async function verifyOTP(req, res) {
+/** GET: http://localhost:8080/api/verifyRestPwdOTP  */
+export async function verifyRestPwdOTP(req, res) {
 	const {code} = req.query;
     if(parseInt(req.app.locals.OTP)=== parseInt(code)){
         req.app.locals.OTP = null //reset OTP value
@@ -257,44 +345,85 @@ export async function createResetSession(req, res) {
 }
 
 // update the password when we have valid session
-/** PUT: http://localhost:8080/api/resetPassword */
+/** PUT: http://localhost:8080/api/resetPassword 
+body: { 
+	--pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+	"password": "NewPassword"
+}
+*/
 export async function resetPassword(req,res){
     try {
         
         if(!req.app.locals.resetSession) return res.status(440).send({error : "Session expired!"});
 
-        const { username, password } = req.body;
+        const { mobile, email, password } = req.body;
 
-        try {
+        if (email && !mobile) {
+			try {
             
-            UserModel.findOne({ username})
-                .then(user => {
-                    bcrypt.hash(password, 10)
-                        .then(hashedPassword => {
-                            UserModel.updateOne({ username : user.username },
-                            { password: hashedPassword})
-                            .exec()
-                            .then(()=>{
-                                req.app.locals.resetSession = false; // reset session
-                                return res.status(201).send({ msg : "Record Updated...!"})
-                            })
-                            .catch((error)=>{
-                                throw error;
-                            })
-                        })
-                        .catch( e => {
-                            return res.status(500).send({
-                                error : "Enable to hashed password"
-                            })
-                        })
-                })
-                .catch(error => {
-                    return res.status(404).send({ error : "Username not Found"});
-                })
-
-        } catch (error) {
-            return res.status(500).send({ error })
-        }
+				UserModel.findOne({ email })
+					.then(user => {
+						bcrypt.hash(password, 10)
+							.then(hashedPassword => {
+								UserModel.updateOne({ email : user.email },
+								{ password: hashedPassword})
+								.exec()
+								.then(()=>{
+									req.app.locals.resetSession = false; // reset session
+									return res.status(201).send({ msg : "Record Updated...!"})
+								})
+								.catch((error)=>{
+									throw error;
+								})
+							})
+							.catch( e => {
+								return res.status(500).send({
+									error : "Enable to hashed password"
+								})
+							})
+					})
+					.catch(error => {
+						return res.status(404).send({ error : "Email not Found"});
+					})
+	
+			} catch (error) {
+				return res.status(500).send({ error })
+			}
+		}
+		else if (!email && mobile) {
+			try {
+            
+				UserModel.findOne({ mobile })
+					.then(user => {
+						bcrypt.hash(password, 10)
+							.then(hashedPassword => {
+								UserModel.updateOne({ mobile : user.mobile },
+								{ password: hashedPassword})
+								.exec()
+								.then(()=>{
+									req.app.locals.resetSession = false; // reset session
+									return res.status(201).send({ msg : "Record Updated...!"})
+								})
+								.catch((error)=>{
+									throw error;
+								})
+							})
+							.catch( e => {
+								return res.status(500).send({
+									error : "Enable to hashed password"
+								})
+							})
+					})
+					.catch(error => {
+						return res.status(404).send({ error : "Mobile not Found"});
+					})
+	
+			} catch (error) {
+				return res.status(500).send({ error })
+			}
+		}
 
     } catch (error) {
         return res.status(401).send({ error })
