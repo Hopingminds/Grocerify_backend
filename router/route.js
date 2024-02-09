@@ -22,8 +22,8 @@ router.route('/verifyRestPwdOTP').get(controller.verifyRestPwdOTP) // verify gen
 router.route('/createResetSession').get(controller.createResetSession) // reset all variables
 
 // mobile OTP Verification
-router.route('/generateMobileOTP').post(controller.verifyUser, generateMobileOTP) // generate mobileOTP
-router.route('/verifyMobileOTP').post(controller.verifyUser, verifyMobileOTP) // generate mobileOTP
+router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
+router.route('/verifyMobileOTP').post(verifyMobileOTP) // generate mobileOTP
 
 //-- GET product data
 router.route('/products').get(productsController.products) // get all products data
