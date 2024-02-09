@@ -330,8 +330,8 @@ export async function generateRestPwdOTP(req, res) {
 }
 */
 export async function verifyRestPwdOTP(req, res) {
-	const {OTP} = req.query;
-    if(parseInt(req.app.locals.OTP)=== parseInt(OTP)){
+	const {otp} = req.query;
+    if(parseInt(req.app.locals.OTP)=== parseInt(otp)){
         req.app.locals.OTP = null //reset OTP value
         req.app.locals.resetSession = true // start session for reset password
         return res.status(201).send({ msg: 'Verify Successsfully!'})
