@@ -20,7 +20,7 @@ export async function generateMobileOTP(req, res) {
 		.verifications.create({ to: `+91${mobile}`, channel: 'sms' })
 		.then((verification) => res.status(201).send({ msg: 'OTP Sent.' }))
 		.catch((err) => {
-			res.status(201).send({ err: 'Unable to generate OTP' })
+			res.status(500).send({ err: 'Unable to generate OTP' })
 		})
 }
 
@@ -42,6 +42,6 @@ export async function verifyMobileOTP(req, res) {
 		})
 		.then((verification_check) => res.status(201).send({msg: verification_check.status}))
         .catch((err)=>{
-            res.status(201).send({ err: 'Wrong OTP' })
+            res.status(500).send({ err: 'Wrong OTP' })
         })
 }
