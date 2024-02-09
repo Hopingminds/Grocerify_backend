@@ -123,7 +123,7 @@ export async function login(req, res) {
 							{
 								userID: user._id,
 								username: user.username,
-								accountType: user.accountType,
+								// accountType: user.accountType,
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
