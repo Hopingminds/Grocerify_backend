@@ -17,8 +17,8 @@ router.route('/upload').post(fileController.handleFileUpload, fileController.upl
 
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser) // user with username
-router.route('/generateOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
-router.route('/verifyOTP').get(controller.verifyRestPwdOTP) // verify generated OTP
+router.route('/generateRestPwdOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
+router.route('/verifyRestPwdOTP').get(controller.verifyRestPwdOTP) // verify generated OTP
 router.route('/createResetSession').get(controller.createResetSession) // reset all variables
 
 // mobile OTP Verification
