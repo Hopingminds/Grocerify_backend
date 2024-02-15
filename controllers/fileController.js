@@ -1,4 +1,4 @@
-import productSchema from '../model/Products.model.js'
+import productModel from '../model/Products.model.js'
 import xlsx from 'xlsx'
 import multer from 'multer'
 import slugify from 'slugify'
@@ -45,7 +45,7 @@ export async function upload(req, res) {
 	}
 	try {
 		// Insert data into MongoDB using Mongoose model
-		await productSchema.insertMany(sheetData)
+		await productModel.insertMany(sheetData)
 		res.status(200).send('File uploaded successfully.')
 	} catch (err) {
 		console.log(err);

@@ -12,12 +12,14 @@ export async function verifyUser(req, res, next) {
 		if (email && !mobile) {
 			let exit = await UserModel.findOne({ email })
 			if (!exit) return res.status(404).send({ error: "Can't find user!" })
+			req.userID = exit._id
 			next()
-		}
-
-		else if (!email && mobile) {
+	}
+	
+	else if (!email && mobile) {
 			let exit = await UserModel.findOne({ mobile })
 			if (!exit) return res.status(404).send({ error: "Can't find user!" })
+			req.userID = exit._id
 			next()	
 		}
 	} catch (error) {

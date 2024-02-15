@@ -14,6 +14,8 @@ router.route('/loginWithEmail').post(controller.verifyUser,controller.loginWithE
 router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWithMobile) // login in app with mobile
 //-- File Handler
 router.route('/upload').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
+//-- POST product data
+router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to update the user profile
 
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser) // user with username
@@ -32,8 +34,6 @@ router.route('/product/:productname').get(productsController.getProductByName) /
 /** PUT Methods */
 router.route('/updateuser').put(Auth, controller.updateUser); // is use to update the user profile
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword) // used to reset password
-//-- PUT product data
-router.route('/addtocart').put(Auth, productsController.addToCart); // is use to update the user profile
 
 
 export default router

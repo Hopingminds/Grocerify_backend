@@ -1,5 +1,6 @@
 import productModel from '../model/Products.model.js'
-
+import cartModel from '../model/Cart.model.js'
+import ProductsModel from '../model/Products.model.js';
 /** GET: http://localhost:8080/api/products */
 export async function products(req, res) {
 	let {category,subcategory,sort,price_min,price_max} = req.query
@@ -73,43 +74,46 @@ export async function getProductByName(req, res) {
 	}
 }
 
-/** PUT: http://localhost:8080/api/addToCart 
- * @param: {
-    "header" : "<token>"
-}
+/** POST: http://localhost:8080/api/addtocart
 body: {
-    firstName: '',
-    address : '',
-    profile : ''
+    "email":"abcd@gmail.com",
+    "productid": "65c4ba60866d0d5a6fc4a82b",
+    "quantity":1
 }
 */
 export async function addToCart(req, res) {
+	let userID = req.userID
 	try {
-		const { userID } = req.user;
-		const body = req.body
-		if (!userID) return res.status(401).send({ error: 'Invalid User!' })
+        const { productid, quantity } = req.body;
 
-		const updateUser = new Promise((resolve, reject) => {
-			// update the data
-			UserModel.updateOne({ _id: userID }, body)
-            .exec()
-            .then(()=>{
-                resolve()
-            })
-            .catch((error)=>{
-                throw error
-            })
-		})
-        
-        Promise.all([updateUser])
-        .then(()=>{
-            return res.status(201).send({ msg : "Record Updated"});
-        })
-        .catch((error) => {
-            return res.status(500).send({ error: error.message })
-        })
+        // Find the cart for the user
+        let cart = await cartModel.findOne({ _id:userID });
 
-	} catch (error) {
-		return res.status(401).send({ error })
-	}
+        // If the user has no cart, create a new one
+        if (!cart) {
+            cart = new cartModel({ _id:userID, products: [] });
+        }
+
+        // Check if the product already exists in the cart
+        const existingProductIndex = cart.products.findIndex(product => product.productid === productid);
+
+        if (existingProductIndex !== -1) {
+            // If the product already exists, update its quantity
+            cart.products[existingProductIndex].quantity += quantity || 1;
+        } else {
+            // If the product doesn't exist, add it to the cart
+            const product = await ProductsModel.findById(productid);
+            if (!product) {
+                return res.status(404).json({ success: false, message: 'Product not found' });
+            }
+            cart.products.push({ productid:product.id, quantity });
+        }
+
+        await cart.save();
+
+        res.status(201).json({ success: true, message: 'Product added to cart successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 }
