@@ -185,7 +185,7 @@ export async function addtowishlist(req, res) {
     }
 }
 
-/** GET: http://localhost:8080/api/getcart
+/** GET: http://localhost:8080/api/getwishlist
 query: {
     --pass only one email or mobile according to reset with mobile or reset with email
     "email": "example@gmail.com",
