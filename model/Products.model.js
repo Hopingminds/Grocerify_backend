@@ -55,6 +55,10 @@ export const productSchema = new mongoose.Schema({
     "rating":{
 		type: Number,
 	},
+	"stock":{
+		type: Number,
+		default: 10
+	}
 })
 
 export default mongoose.model.inventories || mongoose.model('inventory', productSchema)

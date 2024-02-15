@@ -136,7 +136,7 @@ export async function getcart(req, res) {
             return res.status(404).json({ success: false, message: 'Cart not found' });
         }
 
-        res.status(200).json({ success: true, cart });
+        res.status(200).json({ success: true, cart:cart.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
@@ -202,7 +202,7 @@ export async function getwishlist(req, res) {
             return res.status(404).json({ success: false, message: 'wishlist not found' });
         }
 
-        res.status(200).json({ success: true, wishlist });
+        res.status(200).json({ success: true, wishlist:wishlist.cart.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
