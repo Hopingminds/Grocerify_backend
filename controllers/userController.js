@@ -29,7 +29,6 @@ export async function verifyUser(req, res, next) {
 
 /** POST: http://localhost:8080/api/register 
 * @param : {
-    "username" : "example123",
     "password" : "admin123",
     "email": "example@gmail.com",
     "firstName" : "bill",
@@ -40,23 +39,7 @@ export async function verifyUser(req, res, next) {
 */
 export async function register(req, res) {
 	try {
-		const { username, password, email, profile, firstName, lastName, mobile } = req.body
-
-		// check the existing user
-		const existUsername = new Promise((resolve, reject) => {
-			UserModel.findOne({ username })
-				.exec()
-				.then((user) => {
-					if (user) {
-						reject({ error: 'Please use a unique username' })
-					} else {
-						resolve()
-					}
-				})
-				.catch((err) => {
-					reject(new Error(err))
-				})
-		})
+		const { password, email, profile, firstName, lastName, mobile } = req.body
 
 		// check for existing email
 		const existMobile = new Promise((resolve, reject) => {
@@ -90,14 +73,13 @@ export async function register(req, res) {
 				})
 		})
 
-		Promise.all([existUsername, existMobile, existEmail])
+		Promise.all([existMobile, existEmail])
 			.then(() => {
 				if (password) {
 					bcrypt
 						.hash(password, 10)
 						.then((hashedPassword) => {
 							const user = new UserModel({
-								username,
 								password: hashedPassword,
 								profile: profile || '',
 								email,
@@ -155,7 +137,6 @@ export async function loginWithEmail(req, res) {
 						const token = jwt.sign(
 							{
 								userID: user._id,
-								username: user.username,
 								email: user.email,
 							},
 							ENV.JWT_SECRET,
@@ -163,7 +144,6 @@ export async function loginWithEmail(req, res) {
 						)
 						return res.status(200).send({
 							msg: 'Login Successful',
-							username: user.username,
 							email: user.email,
 							token,
 						})
@@ -205,7 +185,6 @@ export async function loginWithMobile(req, res) {
 						const token = jwt.sign(
 							{
 								userID: user._id,
-								username: user.username,
 								email: user.email
 							},
 							ENV.JWT_SECRET,
@@ -213,7 +192,6 @@ export async function loginWithMobile(req, res) {
 						)
 						return res.status(200).send({
 							msg: 'Login Successful',
-							username: user.username,
 							email: user.email,
 							token,
 						})
@@ -232,16 +210,16 @@ export async function loginWithMobile(req, res) {
 	}
 }
 
-/** GET: http://localhost:8080/api/user/example123 */
+/** GET: http://localhost:8080/api/user/example123@mail.com */
 export async function getUser(req, res) {
-	const { username } = req.params
+	const { email } = req.params
 
 	try {
-		if (!username)
-			return res.status(501).send({ error: 'Invalid Username' })
+		if (!email)
+			return res.status(501).send({ error: 'Invalid email' })
 
 		const checkUser = new Promise((resolve, reject) => {
-			UserModel.findOne({ username })
+			UserModel.findOne({ email })
 				.exec()
 				.then((user) => {
 					if (!user) {
@@ -274,7 +252,6 @@ export async function getUser(req, res) {
     "header" : "<token>"
 }
 body: { --pass only required fields
-    "username" : "example123",
     "password" : "admin123",
     "email": "example@gmail.com",
     "firstName" : "bill",
