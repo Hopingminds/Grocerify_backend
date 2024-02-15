@@ -1,6 +1,6 @@
 import productModel from '../model/Products.model.js'
 import cartModel from '../model/Cart.model.js'
-import ProductsModel from '../model/Products.model.js';
+import wishlistModel from '../model/Wishlist.model.js'
 /** GET: http://localhost:8080/api/products */
 export async function products(req, res) {
 	let {category,subcategory,sort,price_min,price_max} = req.query
@@ -89,7 +89,7 @@ export async function addToCart(req, res) {
         const { productid, quantity } = req.body;
 		
 		// Fetch the product data
-		const product = await ProductsModel.findById(productid);
+		const product = await productModel.findById(productid);
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
@@ -137,6 +137,72 @@ export async function getcart(req, res) {
         }
 
         res.status(200).json({ success: true, cart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
+/** POST: http://localhost:8080/api/addtowishlist
+body: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+    "productid": "65c4ba60866d0d5a6fc4a82b",
+}
+*/
+export async function addtowishlist(req, res) {
+	let userID = req.userID
+	try {
+        const { productid } = req.body;
+		
+		// Fetch the product data
+		const product = await productModel.findById(productid);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        // Find the wishlist for the user
+        let wishlist = await wishlistModel.findOne({ _id:userID });
+
+        // If the user has no wishlist, create a new one
+        if (!wishlist) {
+            wishlist = new wishlistModel({ _id:userID, products: [] });
+        }
+
+        const existingProductIndex = wishlist.products.findIndex(p => p.product.equals(product._id));
+
+        if (existingProductIndex == -1) {
+            wishlist.products.push({ product:product._id});
+        }
+
+        await wishlist.save();
+        res.status(201).json({success: true, msg: 'Product added to wishlist successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({success: false, msg: 'Internal server error' });
+    }
+}
+
+/** GET: http://localhost:8080/api/getcart
+query: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+}
+*/
+export async function getwishlist(req, res) {
+	let userID = req.userID
+	try {
+        // Find the cart document and populate the products field with product data
+        const wishlist = await wishlistModel.findOne({_id:userID}).populate('products.product');
+
+        if (!wishlist) {
+            return res.status(404).json({ success: false, message: 'wishlist not found' });
+        }
+
+        res.status(200).json({ success: true, wishlist });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });

@@ -16,6 +16,7 @@ router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWith
 router.route('/upload').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
 //-- POST product data
 router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to add to cart
+router.route('/addtowishlist').post(controller.verifyUser, productsController.addtowishlist); // is use to add to cart
 
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser) // user with username
@@ -26,6 +27,7 @@ router.route('/createResetSession').get(controller.createResetSession) // reset 
 router.route('/products').get(productsController.products) // get all products data
 router.route('/product/:productname').get(productsController.getProductByName) // get all products data
 router.route('/getcart').get(controller.verifyUser, productsController.getcart) //generate random OTP
+router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //generate random OTP
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
