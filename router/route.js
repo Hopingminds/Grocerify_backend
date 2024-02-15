@@ -15,21 +15,22 @@ router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWith
 //-- File Handler
 router.route('/upload').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
 //-- POST product data
-router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to update the user profile
+router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to add to cart
 
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser) // user with username
 router.route('/generateRestPwdOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
 router.route('/verifyRestPwdOTP').get(controller.verifyRestPwdOTP) // verify generated OTP
 router.route('/createResetSession').get(controller.createResetSession) // reset all variables
+//-- GET product data
+router.route('/products').get(productsController.products) // get all products data
+router.route('/product/:productname').get(productsController.getProductByName) // get all products data
+router.route('/getcart').get(controller.verifyUser, productsController.getcart) //generate random OTP
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
 router.route('/verifyMobileOTP').post(verifyMobileOTP) // generate mobileOTP
 
-//-- GET product data
-router.route('/products').get(productsController.products) // get all products data
-router.route('/product/:productname').get(productsController.getProductByName) // get all products data
 
 /** PUT Methods */
 router.route('/updateuser').put(Auth, controller.updateUser); // is use to update the user profile

@@ -76,7 +76,9 @@ export async function getProductByName(req, res) {
 
 /** POST: http://localhost:8080/api/addtocart
 body: {
-    "email":"abcd@gmail.com",
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
     "productid": "65c4ba60866d0d5a6fc4a82b",
     "quantity":1
 }
@@ -116,4 +118,41 @@ export async function addToCart(req, res) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
+}
+
+/** GET: http://localhost:8080/api/getcart
+query: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+}
+*/
+export async function getcart(req, res) {
+	let userID = req.userID
+	try {
+		const checkCart = new Promise((resolve, reject) => {
+			cartModel.findOne({ _id:userID })
+				.exec()
+				.then((cart) => {
+					if (!cart) {
+						resolve({msg:'Empty Cart.'})
+					} else {
+						resolve(cart)
+					}
+				})
+				.catch((err) => {
+					reject(new Error(err))
+				})
+		})
+
+		Promise.all([checkCart])
+			.then((cartDetails) => {
+				return res.status(200).send(cartDetails)
+			})
+			.catch((error) => {
+				return res.status(500).send({ error: error.message })
+			})
+	} catch (error) {
+		return res.status(404).send({ error: 'Cannot Find User Data' })
+	}
 }
