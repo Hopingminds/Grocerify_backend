@@ -6,6 +6,8 @@ import * as productsController from '../controllers/productsController.js'
 import { registerMail } from '../controllers/mailer.js'
 import { generateMobileOTP, verifyMobileOTP } from '../controllers/mobileOtp.js'
 import Auth, { localVariables } from '../middleware/auth.js'
+
+
 /** POST Methods */
 router.route('/register').post(controller.register)
 router.route('/registerMail').post(registerMail) // register mail
@@ -18,6 +20,8 @@ router.route('/upload').post(fileController.handleFileUpload, fileController.upl
 router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to add to cart
 router.route('/addtowishlist').post(controller.verifyUser, productsController.addtowishlist); // is use to add to cart
 
+
+
 /** GET Methods */
 router.route('/user/:username').get(controller.getUser) // user with username
 router.route('/generateRestPwdOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
@@ -28,6 +32,8 @@ router.route('/products').get(productsController.products) // get all products d
 router.route('/product/:productname').get(productsController.getProductByName) // get all products data
 router.route('/getcart').get(controller.verifyUser, productsController.getcart) //generate random OTP
 router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //generate random OTP
+
+
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
