@@ -28,7 +28,11 @@ const allowOnlyFromAllowedIPs = (req, res, next) => {
     if (allowedIPs.includes(clientIP)) {
         next(); // Allow request to proceed
     } else {
-        res.status(403).send({"warning":'Nikal Laude Pehli Fursat Me Nikal'});
+        res.set('Content-Type', 'text/html');
+        res.status(403).send(Buffer.from(
+                '<img style="position:absolute; left:50%; top:50%; transform: translate(-50%, -50%);" src="https://media.tenor.com/jiXga9K9xbMAAAAM/nikal-laude-nikal-lavde.gif"></img>'
+            )
+        );
     }
 };
 // api routes
