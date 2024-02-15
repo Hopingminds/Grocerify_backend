@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import ProductsModel from "./Products.model.js";
 export const CartSchema = new mongoose.Schema({
     _id :{ type: mongoose.Schema.Types.ObjectId, 
         auto: true, 
@@ -6,8 +7,9 @@ export const CartSchema = new mongoose.Schema({
     },
     products: [
         {
-            productid:{
-                type: String,
+            product:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: ProductsModel,
             },
             quantity: {
                 type: Number,

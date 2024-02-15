@@ -87,6 +87,12 @@ export async function addToCart(req, res) {
 	let userID = req.userID
 	try {
         const { productid, quantity } = req.body;
+		
+		// Fetch the product data
+		const product = await ProductsModel.findById(productid);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
 
         // Find the cart for the user
         let cart = await cartModel.findOne({ _id:userID });
@@ -96,27 +102,20 @@ export async function addToCart(req, res) {
             cart = new cartModel({ _id:userID, products: [] });
         }
 
-        // Check if the product already exists in the cart
-        const existingProductIndex = cart.products.findIndex(product => product.productid === productid);
+        const existingProductIndex = cart.products.findIndex(p => p.product.equals(product._id));
 
         if (existingProductIndex !== -1) {
-            // If the product already exists, update its quantity
             cart.products[existingProductIndex].quantity += quantity || 1;
         } else {
-            // If the product doesn't exist, add it to the cart
-            const product = await ProductsModel.findById(productid);
-            if (!product) {
-                return res.status(404).json({ success: false, message: 'Product not found' });
-            }
-            cart.products.push({ productid:product.id, quantity });
+            cart.products.push({ product:product._id, quantity });
         }
 
         await cart.save();
 
-        res.status(201).json({ success: true, message: 'Product added to cart successfully' });
+        res.status(201).json({success: true, msg: 'Product added to cart successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        res.status(500).json({success: false, msg: 'Internal server error' });
     }
 }
 
@@ -130,29 +129,16 @@ query: {
 export async function getcart(req, res) {
 	let userID = req.userID
 	try {
-		const checkCart = new Promise((resolve, reject) => {
-			cartModel.findOne({ _id:userID })
-				.exec()
-				.then((cart) => {
-					if (!cart) {
-						resolve({msg:'Empty Cart.'})
-					} else {
-						resolve(cart)
-					}
-				})
-				.catch((err) => {
-					reject(new Error(err))
-				})
-		})
+        // Find the cart document and populate the products field with product data
+        const cart = await cartModel.findOne({_id:userID}).populate('products.product');
 
-		Promise.all([checkCart])
-			.then((cartDetails) => {
-				return res.status(200).send(cartDetails)
-			})
-			.catch((error) => {
-				return res.status(500).send({ error: error.message })
-			})
-	} catch (error) {
-		return res.status(404).send({ error: 'Cannot Find User Data' })
-	}
+        if (!cart) {
+            return res.status(404).json({ success: false, message: 'Cart not found' });
+        }
+
+        res.status(200).json({ success: true, cart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
 }
