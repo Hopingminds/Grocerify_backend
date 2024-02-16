@@ -112,10 +112,69 @@ export async function addToCart(req, res) {
 
         await cart.save();
 
-        res.status(201).json({success: true, msg: 'Product added to cart successfully', quantity: cart.products[existingProductIndex].quantity });
+        res.status(201).json({success: true, msg: 'Product added to cart successfully', quantity: cart });
     } catch (error) {
         console.error(error);
         res.status(500).json({success: false, msg: 'Internal server error' });
+    }
+}
+
+/** POST: http://localhost:8080/api/removefromcart
+body: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+    "productid": "65c4ba60866d0d5a6fc4a82b",
+    "operation": "removeOne" || "removeAll" || "deleteCart"
+}
+*/
+export async function removeFromCart(req, res) {
+    let userID = req.userID;
+    try {
+        const { productid, operation } = req.body;
+
+        // Find the cart for the user
+        let cart = await cartModel.findOne({ _id: userID });
+
+        // If the user has no cart, return with a message
+        if (!cart) {
+            return res.status(404).json({ success: false, message: 'Cart not found for the user' });
+        }
+
+        const existingProductIndex = cart.products.findIndex(p => p.product.equals(productid));
+
+        // If the product is not found in the cart, return with a message
+        if (existingProductIndex === -1 && operation != 'deleteCart') {
+            return res.status(404).json({ success: false, message: 'Product not found in the cart' });
+        }
+
+        switch (operation) {
+            case 'removeOne':
+                // Decrease the quantity of the product by 1
+                cart.products[existingProductIndex].quantity -= 1;
+                // If the quantity becomes 0, remove the product from the cart
+                if (cart.products[existingProductIndex].quantity <= 0) {
+                    cart.products.splice(existingProductIndex, 1);
+                }
+                break;
+            case 'removeAll':
+                // Remove the entire quantity of the product from the cart
+                cart.products.splice(existingProductIndex, 1);
+                break;
+            case 'deleteCart':
+                // Delete the entire cart for the user
+                await cartModel.deleteOne({ _id: userID });
+                return res.status(200).json({ success: true, message: 'Cart deleted successfully' });
+            default:
+                return res.status(400).json({ success: false, message: 'Invalid operation' });
+        }
+
+        await cart.save();
+
+        res.status(200).json({ success: true, message: 'Operation successful', cart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
 
@@ -185,6 +244,47 @@ export async function addtowishlist(req, res) {
     }
 }
 
+/** POST: http://localhost:8080/api/removefromwishlist
+body: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+    "productid": "65c4ba60866d0d5a6fc4a82b",
+}
+*/
+export async function removeFromWishlist(req, res) {
+    let userID = req.userID;
+    try {
+        const { productid } = req.body;
+
+        // Find the wishlist for the user
+        let wishlist = await wishlistModel.findOne({ _id: userID });
+
+        // If the user has no wishlist, return with a message
+        if (!wishlist) {
+            return res.status(404).json({ success: false, message: 'Wishlist not found for the user' });
+        }
+
+        const existingProductIndex = wishlist.products.findIndex(p => p.product.equals(productid));
+
+        // If the product is not found in the wishlist, return with a message
+        if (existingProductIndex === -1) {
+            return res.status(404).json({ success: false, message: 'Product not found in the wishlist' });
+        }
+
+        // Remove the product from the wishlist
+        wishlist.products.splice(existingProductIndex, 1);
+
+        await wishlist.save();
+
+        res.status(200).json({ success: true, message: 'Product removed from wishlist successfully' });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
+
 /** GET: http://localhost:8080/api/getwishlist
 query: {
     --pass only one email or mobile according to reset with mobile or reset with email
@@ -202,7 +302,7 @@ export async function getwishlist(req, res) {
             return res.status(404).json({ success: false, message: 'wishlist not found' });
         }
 
-        res.status(200).json({ success: true, wishlist:wishlist.cart.products });
+        res.status(200).json({ success: true, wishlist:wishlist.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
