@@ -226,8 +226,8 @@ export async function getUser(req, res) {
         if (!userData) {
             return res.status(404).json({ success: false, msg: 'User not found' });
         }
-
-        res.status(200).json({ success: true, data:userData });
+		const { password, ...rest } = userData.toObject()
+        res.status(200).json({ success: true, data:rest });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });
