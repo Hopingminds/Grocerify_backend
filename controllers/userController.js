@@ -394,8 +394,8 @@ body: {
     country: String,
     latitude: String,
     longitude: String,
-    mobile: String,
-    zip: String,
+    mobile: Number,
+    zip: Number,
     type: String,
 }
 */
@@ -405,10 +405,10 @@ export async function addAddress(req, res) {
 		if (!userID) return res.status(401).send({ error: 'User Not Found...!' })
 		const address = req.body
 		
-        let user = await UserModel.findOne({ _id:userID });
+        let userData = await UserModel.findOne({ _id:userID });
 		
-		user.address.push({ address });
-        await cart.save();
+		userData.address.push({ address });
+        await userData.save();
 
         res.status(201).json({success: true, msg: 'Address saved successfully' });
     } catch (error) {

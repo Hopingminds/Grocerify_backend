@@ -11,6 +11,6 @@ export const AddressSchema = new mongoose.Schema({
     latitude: String,
     longitude: String,
     mobile: Number,
-    zip: String,
+    zip: Number,
     type: String,
 });
