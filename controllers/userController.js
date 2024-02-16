@@ -377,3 +377,42 @@ export async function resetPassword(req,res){
         return res.status(401).send({ error })
     }
 }
+
+// address
+
+/** PUT: http://localhost:8080/api/addaddress 
+ * @param: {
+    "header" : "<token>"
+}
+body: {
+    full_name: String,
+    address_line_1: String,
+    address_line_2: String,
+    landmark: String,
+    city: String,
+    state: String,
+    country: String,
+    latitude: String,
+    longitude: String,
+    mobile: String,
+    zip: String,
+    type: String,
+}
+*/
+export async function addAddress(req, res) {
+	try {
+        const { userID } = req.user;
+		if (!userID) return res.status(401).send({ error: 'User Not Found...!' })
+		const address = req.body
+		
+        let user = await UserModel.findOne({ _id:userID });
+		
+		user.address.push({ address });
+        await cart.save();
+
+        res.status(201).json({success: true, msg: 'Address saved successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({success: false, msg: 'Internal server error' });
+    }
+}

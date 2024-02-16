@@ -44,6 +44,7 @@ router.route('/verifyMobileOTP').post(verifyMobileOTP) // generate mobileOTP
 
 /** PUT Methods */
 router.route('/updateuser').put(Auth, controller.updateUser); // is use to update the user profile
+router.route('/addaddress').put(Auth, controller.addAddress); // is use to add user address
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword) // used to reset password
 
 
