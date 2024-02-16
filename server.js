@@ -28,15 +28,17 @@ const allowOnlyFromAllowedIPs = (req, res, next) => {
     if (allowedIPs.includes(clientIP)) {
         next(); // Allow request to proceed
     } else {
-        res.set('Content-Type', 'text/html');
-        res.status(403).send(Buffer.from(
+        res.status(403).send(
                 '<img style="position:absolute; left:50%; top:50%; transform: translate(-50%, -50%);" src="https://media.tenor.com/jiXga9K9xbMAAAAM/nikal-laude-nikal-lavde.gif"></img>'
-            )
-        );
+            );
     }
 };
 // api routes
 app.use('/api', allowOnlyFromAllowedIPs, router)
+
+app.use((req, res, next) => {
+    res.status(404).send('<div style="position:absolute; left:50%; top:50%; transform: translate(-50%, -50%);"><img src="https://c.tenor.com/1-qDMRlzUn4AAAAd/tenor.gif"></img><h1 style="color:white; width:100%; text-align:center; position:absolute; bottom:1vh;">Hum pe to haie noo</h1></div>');
+});
 
 // start server only when we have valid connection
 connect().then(()=>{
