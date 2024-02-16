@@ -4,14 +4,14 @@ import UserModel from "./User.model.js";
 import { AddressSchema } from "./Address.model.js";
 
 export const WishlistSchema = new mongoose.Schema({
-    _id :{ type: ObjectId, 
+    _id :{ type: mongoose.Schema.Types.ObjectId, 
         auto: false, 
         required: true 
     },
     Orders: [
         {
             "_id":{
-                type: ObjectId, 
+                type: mongoose.Schema.Types.ObjectId, 
                 auto: true, 
                 required: true
             },
