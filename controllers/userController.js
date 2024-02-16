@@ -378,8 +378,7 @@ export async function resetPassword(req,res){
     }
 }
 
-// address
-
+// add address
 /** PUT: http://localhost:8080/api/addaddress 
  * @param: {
     "header" : "<token>"
@@ -401,13 +400,12 @@ body: {
 */
 export async function addAddress(req, res) {
 	try {
-        const { userID } = req.user;
+		const { userID } = req.user;
 		if (!userID) return res.status(401).send({ error: 'User Not Found...!' })
 		const address = req.body
 		
         let userData = await UserModel.findOne({ _id:userID });
-		
-		userData.address.push({ address });
+		userData.address.push( address );
         await userData.save();
 
         res.status(201).json({success: true, msg: 'Address saved successfully' });
