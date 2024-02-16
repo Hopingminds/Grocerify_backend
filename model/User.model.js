@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { AddressSchema } from "./Address.model.js";
 
 export const UserSchema = new mongoose.Schema({
     password: {
@@ -14,7 +15,7 @@ export const UserSchema = new mongoose.Schema({
     firstName: { type: String},
     lastName: { type: String},
     mobile : { type : Number},
-    address: { type: String},
+    address: [addressSchema],
     profile: { type: String}
 });
 
