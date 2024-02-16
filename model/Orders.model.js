@@ -16,7 +16,14 @@ export const WishlistSchema = new mongoose.Schema({
             "ordered_on":{
                 type:Date
             },
-            "discound_coupon":{},
+            "discound_coupon":{
+                "coupon_code":{
+                    type: String
+                },
+                "discount_price":{
+                    type: Number
+                }
+            },
             "delivered_on":{
                 type:Date
             },
