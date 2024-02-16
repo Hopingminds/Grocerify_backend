@@ -74,7 +74,8 @@ export async function register(req, res) {
 			const token = jwt.sign(
 				{
 					userID: savedUser._id,
-					email: savedUser.email
+					email: savedUser.email,
+					mobile: savedUser.mobile
 				},
 				ENV.JWT_SECRET,
 				{ expiresIn: '24h' }
@@ -114,6 +115,7 @@ export async function loginWithEmail(req, res) {
 							{
 								userID: user._id,
 								email: user.email,
+								mobile: user.mobile
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -161,7 +163,8 @@ export async function loginWithMobile(req, res) {
 						const token = jwt.sign(
 							{
 								userID: user._id,
-								email: user.email
+								email: user.email,
+								mobile: user.mobile
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
