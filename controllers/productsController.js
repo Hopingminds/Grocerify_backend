@@ -99,7 +99,7 @@ export async function addToCart(req, res) {
         }
 
         // Find the cart for the user
-        let cart = await cartModel.findOne({ _id:userID });
+        let cart = await cartModel.findOne({ _id:userID }).populate('products.product');
 
         // If the user has no cart, create a new one
         if (!cart) {
@@ -116,7 +116,7 @@ export async function addToCart(req, res) {
 
         await cart.save();
 
-        res.status(201).json({success: true, msg: 'Product added to cart successfully', quantity: cart });
+        res.status(201).json({success: true, msg: 'Product added to cart successfully', data: cart.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({success: false, msg: 'Internal server error' });
@@ -138,7 +138,7 @@ export async function removeFromCart(req, res) {
         const { productid, operation } = req.body;
 
         // Find the cart for the user
-        let cart = await cartModel.findOne({ _id: userID });
+        let cart = await cartModel.findOne({ _id: userID }).populate('products.product');
 
         // If the user has no cart, return with a message
         if (!cart) {
