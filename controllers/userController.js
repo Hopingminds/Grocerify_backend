@@ -214,7 +214,7 @@ export async function getUser(req, res) {
 
 /** PUT: http://localhost:8080/api/updateuser 
  * @param: {
-    "header" : "<token>"
+    "header" : "Bearer <token>"
 }
 body: { --pass only required fields
     "password" : "admin123",
@@ -381,7 +381,7 @@ export async function resetPassword(req,res){
 // add address
 /** PUT: http://localhost:8080/api/addaddress 
  * @param: {
-    "header" : "<token>"
+    "header" : "Bearer <token>"
 }
 body: {
     full_name: String,
