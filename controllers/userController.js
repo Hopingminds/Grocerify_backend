@@ -217,7 +217,6 @@ export async function loginWithMobile(req, res) {
     "mobile": 8009860560,
 }
 */
-
 export async function getUser(req, res) {
 	let userID = req.userID
 	try {
