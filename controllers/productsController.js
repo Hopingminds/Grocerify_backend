@@ -175,7 +175,7 @@ export async function removeFromCart(req, res) {
 
         await cart.save();
 
-        res.status(200).json({ success: true, message: 'Operation successful', cart });
+        res.status(200).json({ success: true, message: 'Operation successful', data:cart.products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
