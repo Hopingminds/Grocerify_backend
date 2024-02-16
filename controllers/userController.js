@@ -210,41 +210,28 @@ export async function loginWithMobile(req, res) {
 	}
 }
 
-/** GET: http://localhost:8080/api/user/example123@mail.com */
+/** GET: http://localhost:8080/api/user 
+	query: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+}
+*/
+
 export async function getUser(req, res) {
-	const { email } = req.params
-
+	let userID = req.userID
 	try {
-		if (!email)
-			return res.status(501).send({ error: 'Invalid email' })
+        const userData = await UserModel.findOne({_id:userID});
 
-		const checkUser = new Promise((resolve, reject) => {
-			UserModel.findOne({ email })
-				.exec()
-				.then((user) => {
-					if (!user) {
-						reject({ error: "Couldn't Find the User" })
-					} else {
-						// Remove sensitive information (e.g., password) before resolving the promise
-						const { password, ...rest } = user.toObject()
-						resolve(rest)
-					}
-				})
-				.catch((err) => {
-					reject(new Error(err))
-				})
-		})
+        if (!userData) {
+            return res.status(404).json({ success: false, msg: 'User not found' });
+        }
 
-		Promise.all([checkUser])
-			.then((userDetails) => {
-				return res.status(200).send(userDetails)
-			})
-			.catch((error) => {
-				return res.status(500).send({ error: error.message })
-			})
-	} catch (error) {
-		return res.status(404).send({ error: 'Cannot Find User Data' })
-	}
+        res.status(200).json({ success: true, data:userData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
+    }
 }
 
 /** PUT: http://localhost:8080/api/updateuser 
