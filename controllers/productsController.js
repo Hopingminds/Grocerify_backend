@@ -258,7 +258,7 @@ export async function removeFromWishlist(req, res) {
         const { productid } = req.body;
 
         // Find the wishlist for the user
-        let wishlist = await wishlistModel.findOne({ _id: userID });
+        let wishlist = await wishlistModel.findOne({ _id: userID }).populate('products.product');
 
         // If the user has no wishlist, return with a message
         if (!wishlist) {
@@ -276,8 +276,7 @@ export async function removeFromWishlist(req, res) {
         wishlist.products.splice(existingProductIndex, 1);
 
         await wishlist.save();
-
-        res.status(200).json({ success: true, message: 'Product removed from wishlist successfully' });
+        res.status(200).json({ success: true, message: 'Product removed from wishlist successfully', data:wishlist.products });
 
     } catch (error) {
         console.error(error);

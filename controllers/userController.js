@@ -38,80 +38,56 @@ export async function verifyUser(req, res, next) {
 }
 */
 export async function register(req, res) {
-	try {
-		const { password, email, profile, firstName, lastName, mobile } = req.body
+    try {
+        const { password, email, profile, firstName, lastName, mobile } = req.body;
 
-		// check for existing email
-		const existMobile = new Promise((resolve, reject) => {
-			UserModel.findOne({ mobile })
-				.exec()
-				.then((mobile) => {
-					if (mobile) {
-						reject({ error: 'Please use a unique mobile' })
-					} else {
-						resolve()
-					}
-				})
-				.catch((err) => {
-					reject(new Error(err))
-				})
-		})
-		
-		// check for existing email
-		const existEmail = new Promise((resolve, reject) => {
-			UserModel.findOne({ email })
-				.exec()
-				.then((email) => {
-					if (email) {
-						reject({ error: 'Please use a unique email' })
-					} else {
-						resolve()
-					}
-				})
-				.catch((err) => {
-					reject(new Error(err))
-				})
-		})
+        // check for existing mobile number
+        const existMobile = UserModel.findOne({ mobile }).exec();
 
-		Promise.all([existMobile, existEmail])
-			.then(() => {
-				if (password) {
-					bcrypt
-						.hash(password, 10)
-						.then((hashedPassword) => {
-							const user = new UserModel({
-								password: hashedPassword,
-								profile: profile || '',
-								email,
-								firstName,
-								lastName,
-								mobile
-							})
+        // check for existing email
+        const existEmail = UserModel.findOne({ email }).exec();
 
-							// return save result as a response
-							user.save()
-								.then((result) =>
-									res.status(201).send({
-										msg: 'User Register Successfully',
-									})
-								)
-								.catch((error) =>
-									res.status(500).send({ error })
-								)
-						})
-						.catch((error) => {
-							return res.status(500).send({
-								error: 'Enable to hashed password',
-							})
-						})
-				}
-			})
-			.catch((error) => {
-				return res.status(500).send({ error })
-			})
-	} catch (error) {
-		return res.status(500).send(error)
-	}
+        // Checking for existing mobile and email
+        const [mobileExist, emailExist] = await Promise.all([existMobile, existEmail]);
+
+        if (mobileExist) {
+            return res.status(400).send({ error: 'Please use a unique mobile number' });
+        }
+
+        if (emailExist) {
+            return res.status(400).send({ error: 'Please use a unique email' });
+        }
+
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const user = new UserModel({
+                password: hashedPassword,
+                profile: profile || '',
+                email,
+                firstName,
+                lastName,
+                mobile
+            });
+
+            // Save the user
+            const savedUser = await user.save();
+			const token = jwt.sign(
+				{
+					userID: savedUser._id,
+					email: savedUser.email
+				},
+				ENV.JWT_SECRET,
+				{ expiresIn: '24h' }
+			)
+            // Send response with _id and email
+            return res.status(201).send({
+                msg: 'User Registered Successfully',
+                token
+            });
+        }
+    } catch (error) {
+        return res.status(500).send({ error: 'Internal Server Error' });
+    }
 }
 
 /** POST: http://localhost:8080/api/loginWithEmail 
