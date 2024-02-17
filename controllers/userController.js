@@ -384,33 +384,43 @@ export async function resetPassword(req,res){
     "header" : "Bearer <token>"
 }
 body: {
-    full_name: String,
-    address_line_1: String,
-    address_line_2: String,
-    landmark: String,
-    city: String,
-    state: String,
-    country: String,
-    latitude: String,
-    longitude: String,
-    mobile: Number,
-    zip: Number,
-    type: String,
+    {
+		"address":{
+			"full_name": "Hoping Minds",
+			"address_line_1": "Sectore-75",
+			"address_line_2": "Corporate Greens",
+			"landmark": "2nd Floor",
+			"city": "Mohali",
+			"state": "Mohali",
+			"country": "India",
+			"latitude": "-10937484.3829",
+			"longitude": "3249323.32333",
+			"mobile": 9814740275,
+			"zip": 144002,
+			"type": "Office"
+		},
+		"make_default": true/false
+	}
 }
 */
 export async function addAddress(req, res) {
-	try {
-		const { userID } = req.user;
-		if (!userID) return res.status(401).send({ error: 'User Not Found...!' })
-		const address = req.body
-		
-        let userData = await UserModel.findOne({ _id:userID });
-		userData.address.push( address );
+    try {
+        const { userID } = req.user;
+        if (!userID) return res.status(401).send({ error: 'User Not Found...!' });
+        const { address, make_default } = req.body;
+        
+        let userData = await UserModel.findOne({ _id: userID });
+        
+        if (make_default) {
+            userData.default_address = address;
+        }
+        
+        userData.address.push(address);
         await userData.save();
-
-        res.status(201).json({success: true, msg: 'Address saved successfully' });
+        
+        res.status(201).json({ success: true, msg: 'Address saved successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({success: false, msg: 'Internal server error' });
+        res.status(500).json({ success: false, msg: 'Internal server error' });
     }
 }

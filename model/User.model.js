@@ -16,7 +16,7 @@ export const UserSchema = new mongoose.Schema({
     lastName: { type: String},
     mobile : { type : Number},
     default_address:{
-        type: mongoose.Schema.Types.ObjectId,
+        type: Object
     },
     address: [AddressSchema],
     profile: { type: String}
