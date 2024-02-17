@@ -409,12 +409,13 @@ export async function addAddress(req, res) {
         
         let userData = await UserModel.findOne({ _id: userID });
         
-        if (make_default) {
-            userData.default_address = address;
-        }
-        
         userData.address.push(address);
-        await userData.save();
+        await userData.save().then(data=>{
+			if (make_default) {
+				userData.default_address = data.address[data.address.length - 1]._id;
+				userData.save();
+			}
+		});
         
         res.status(201).json({ success: true, msg: 'Address saved successfully' });
     } catch (error) {
@@ -458,6 +459,61 @@ export async function removeAddress(req, res) {
         await userData.save();
 
         res.status(200).json({ success: true, msg: 'Address removed successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
+    }
+}
+
+// update address
+/** PUT: http://localhost:8080/api/addaddress 
+ * @param: {
+    "header" : "Bearer <token>"
+}
+body: {
+	"address_id": "65d047b3adbe892d50a62877",
+	"address":{
+		"full_name": "Hoping Minds",
+		"address_line_1": "Sectore-75",
+		"address_line_2": "Corporate Greens",
+		"landmark": "2nd Floor",
+		"city": "Mohali",
+		"state": "Mohali",
+		"country": "India",
+		"latitude": "-10937484.3829",
+		"longitude": "3249323.32333",
+		"mobile": 9814740275,
+		"zip": 144002,
+		"type": "Office"
+	},
+}
+*/
+export async function updateAddress(req, res) {
+    try {
+        const { userID } = req.user;
+        if (!userID) return res.status(401).send({ error: 'User Not Found...!' });
+        const { address_id, address } = req.body;
+
+        let userData = await UserModel.findOne({ _id: userID });
+
+        // Find the index of the address with the given address_id
+        const index = userData.address.findIndex(addr => addr._id.toString() === address_id);
+
+        if (index === -1) {
+            return res.status(404).json({ success: false, msg: 'Address not found' });
+        }
+
+        // Update the address at the found index
+        userData.address[index] = { ...userData.address[index], ...address };
+
+        // If the updated address was the default address, update the default reference
+        if (userData.default_address && userData.default_address.toString() === address_id) {
+            userData.default_address = userData.address[index]._id;
+        }
+
+        await userData.save();
+
+        res.status(200).json({ success: true, msg: 'Address updated successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });
