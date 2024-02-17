@@ -47,5 +47,7 @@ router.route('/updateuser').put(Auth, controller.updateUser); // is use to updat
 router.route('/addaddress').put(Auth, controller.addAddress); // is use to add user address
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword) // used to reset password
 
+/** DELETE Methods */
+router.route('/removeaddress').delete(Auth, controller.removeAddress); // is use to add user address
 
 export default router

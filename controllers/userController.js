@@ -384,23 +384,21 @@ export async function resetPassword(req,res){
     "header" : "Bearer <token>"
 }
 body: {
-    {
-		"address":{
-			"full_name": "Hoping Minds",
-			"address_line_1": "Sectore-75",
-			"address_line_2": "Corporate Greens",
-			"landmark": "2nd Floor",
-			"city": "Mohali",
-			"state": "Mohali",
-			"country": "India",
-			"latitude": "-10937484.3829",
-			"longitude": "3249323.32333",
-			"mobile": 9814740275,
-			"zip": 144002,
-			"type": "Office"
-		},
-		"make_default": true/false
-	}
+	"address":{
+		"full_name": "Hoping Minds",
+		"address_line_1": "Sectore-75",
+		"address_line_2": "Corporate Greens",
+		"landmark": "2nd Floor",
+		"city": "Mohali",
+		"state": "Mohali",
+		"country": "India",
+		"latitude": "-10937484.3829",
+		"longitude": "3249323.32333",
+		"mobile": 9814740275,
+		"zip": 144002,
+		"type": "Office"
+	},
+	"make_default": true/false
 }
 */
 export async function addAddress(req, res) {
@@ -419,6 +417,47 @@ export async function addAddress(req, res) {
         await userData.save();
         
         res.status(201).json({ success: true, msg: 'Address saved successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
+    }
+}
+
+// delete address
+/** DELETE: http://localhost:8080/api/addaddress 
+ * @param: {
+    "header" : "Bearer <token>"
+}
+body: {
+	"address_id": "65d04729adbe892d50a62853"
+}
+*/
+export async function removeAddress(req, res) {
+    try {
+        const { userID } = req.user;
+        if (!userID) return res.status(401).send({ error: 'User Not Found...!' });
+        const { address_id } = req.body;
+
+        let userData = await UserModel.findOne({ _id: userID });
+
+        // Find the index of the address with the given address_id
+        const index = userData.address.findIndex(addr => addr._id.toString() === address_id);
+
+        if (index === -1) {
+            return res.status(404).json({ success: false, msg: 'Address not found' });
+        }
+
+        // Remove the address at the found index
+        userData.address.splice(index, 1);
+
+        // If the removed address was the default address, remove the default reference
+        if (userData.default_address && userData.default_address.toString() === address_id) {
+            userData.default_address = null;
+        }
+
+        await userData.save();
+
+        res.status(200).json({ success: true, msg: 'Address removed successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });
