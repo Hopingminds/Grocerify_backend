@@ -379,7 +379,7 @@ export async function resetPassword(req,res){
 }
 
 // add address
-/** PUT: http://localhost:8080/api/addaddress 
+/** POST: http://localhost:8080/api/addaddress 
  * @param: {
     "header" : "Bearer <token>"
 }
