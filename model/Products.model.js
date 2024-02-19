@@ -13,8 +13,14 @@ export const productSchema = new mongoose.Schema({
     "brand":{
 		type: String,
 	},
-    "product_image_url":{
+    "product_primary_image_url":{
 		type: String,
+	},
+    "product_images_url":{
+		type: Array,
+	},
+    "product_videos_url":{
+		type: Array,
 	},
     "tags":{
 		type: String,

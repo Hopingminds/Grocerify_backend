@@ -411,7 +411,7 @@ export async function addAddress(req, res) {
         
         userData.address.push(address);
         await userData.save().then(data=>{
-			if (make_default) {
+			if (make_default || userData.address.length == 0) {
 				userData.default_address = data.address[data.address.length - 1]._id;
 				userData.save();
 			}

@@ -42,6 +42,12 @@ export async function upload(req, res) {
 	for (let index = 0; index < sheetData.length; index++) {
 		const element = sheetData[index];
 		sheetData[index].slug = slugify(element.products_title)
+		if (typeof sheetData[index].product_images_url === 'string') {
+			sheetData[index].product_images_url = sheetData[index].product_images_url.split('\n')
+		}
+		if (typeof sheetData[index].product_videos_url === 'string') {
+			sheetData[index].product_videos_url = sheetData[index].product_videos_url.split('\n')
+		}
 	}
 	try {
 		// Insert data into MongoDB using Mongoose model
