@@ -425,7 +425,7 @@ export async function addAddress(req, res) {
 }
 
 // delete address
-/** DELETE: http://localhost:8080/api/addaddress 
+/** DELETE: http://localhost:8080/api/removeaddress 
  * @param: {
     "header" : "Bearer <token>"
 }
