@@ -492,7 +492,7 @@ export async function updateAddress(req, res) {
     try {
         const { userID } = req.user;
         if (!userID) return res.status(401).send({ error: 'User Not Found...!' });
-        const { address_id, address } = req.body;
+        const { address_id, address, make_default } = req.body;
 
         let userData = await UserModel.findOne({ _id: userID });
 
@@ -505,13 +505,18 @@ export async function updateAddress(req, res) {
 
         // Update the address at the found index
         userData.address[index] = { ...userData.address[index], ...address };
-
+		
         // If the updated address was the default address, update the default reference
-        if (userData.default_address && userData.default_address.toString() === address_id) {
+        if (userData.default_address && userData.default_address.toString() === address_id && !make_default) {
             userData.default_address = userData.address[index]._id;
         }
 
-        await userData.save();
+		await userData.save().then(data=>{
+			if (make_default) {
+				userData.default_address = data.address[data.address.length - 1]._id;
+				userData.save();
+			}
+		});
 
         res.status(200).json({ success: true, msg: 'Address updated successfully' });
     } catch (error) {
