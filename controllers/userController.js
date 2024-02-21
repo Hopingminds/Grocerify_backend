@@ -466,7 +466,7 @@ export async function removeAddress(req, res) {
 }
 
 // update address
-/** PUT: http://localhost:8080/api/addaddress 
+/** PUT: http://localhost:8080/api/updateaddress 
  * @param: {
     "header" : "Bearer <token>"
 }
