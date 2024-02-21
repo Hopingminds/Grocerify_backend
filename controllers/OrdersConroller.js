@@ -1,5 +1,4 @@
 import productsModel from '../model/Products.model.js'
-import UserModel from '../model/User.model.js'
 import OrdersModel from '../model/Orders.model.js'
 
 /** POST: http://localhost:8080/api/order 

@@ -4,6 +4,7 @@ import * as controller from '../controllers/userController.js'
 import * as fileController from '../controllers/fileController.js'
 import * as productsController from '../controllers/productsController.js'
 import * as ordersController from '../controllers/OrdersConroller.js'
+import * as CategoriesController from '../controllers/CategoriesController.js'
 import { registerMail } from '../controllers/mailer.js'
 import { generateMobileOTP, verifyMobileOTP } from '../controllers/mobileOtp.js'
 import Auth, { localVariables } from '../middleware/auth.js'
@@ -25,8 +26,9 @@ router.route('/addtowishlist').post(controller.verifyUser, productsController.ad
 router.route('/removefromwishlist').post(controller.verifyUser, productsController.removeFromWishlist); // is use to remove from wishlist
 //-- POST Orders
 router.route('/order').post(Auth, ordersController.order); // is use to remove from wishlist
-
-
+//-- POST Categories
+router.route('/addcategory').post(CategoriesController.addcategory); // is use to remove from wishlist
+router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is use to remove from wishlist
 
 /** GET Methods */
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username
@@ -38,9 +40,10 @@ router.route('/products').get(productsController.products) // get all products d
 router.route('/product/:productname').get(productsController.getProductByName) // get all products data
 router.route('/getcart').get(controller.verifyUser, productsController.getcart) //generate random OTP
 router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //generate random OTP
-//-- POST Orders
+//-- GET Orders
 router.route('/getorders').get(Auth, ordersController.getorders) //generate random OTP
-
+//-- GET Categories
+router.route('/categories').get(CategoriesController.getcategories) //generate random OTP
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
