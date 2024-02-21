@@ -48,8 +48,6 @@ router.route('/getwishlist').get(controller.verifyUser, productsController.getwi
 router.route('/getorders').get(Auth, ordersController.getorders) //get all orders
 //-- GET Categories
 router.route('/categories').get(CategoriesController.getcategories) //get all categories
-//-- GET Shops
-router.route('/getshopdata').get(controller.verifyUser, ShopController.getShopData) //get a Shop Data
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
