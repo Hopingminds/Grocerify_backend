@@ -513,7 +513,7 @@ export async function updateAddress(req, res) {
 
 		await userData.save().then(data=>{
 			if (make_default) {
-				userData.default_address = data.address[data.address.length - 1]._id;
+				userData.default_address = data.address[index]._id;
 				userData.save();
 			}
 		});
