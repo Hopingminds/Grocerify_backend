@@ -5,6 +5,7 @@ import * as fileController from '../controllers/fileController.js'
 import * as productsController from '../controllers/productsController.js'
 import * as ordersController from '../controllers/OrdersConroller.js'
 import * as CategoriesController from '../controllers/CategoriesController.js'
+import * as ShopController from '../controllers/Shop.Controller.js'
 import { registerMail } from '../controllers/mailer.js'
 import { generateMobileOTP, verifyMobileOTP } from '../controllers/mobileOtp.js'
 import Auth, { localVariables } from '../middleware/auth.js'
@@ -27,8 +28,11 @@ router.route('/removefromwishlist').post(controller.verifyUser, productsControll
 //-- POST Orders
 router.route('/order').post(Auth, ordersController.order); // is use to remove from wishlist
 //-- POST Categories
-router.route('/addcategory').post(CategoriesController.addcategory); // is use to remove from wishlist
-router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is use to remove from wishlist
+router.route('/addcategory').post(CategoriesController.addcategory); // is use to add a category
+router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is use to add a subcategory
+//-- POST Shop
+router.route('/addshop').post(controller.verifyUser,ShopController.registerShop) 
+
 
 /** GET Methods */
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username
@@ -38,12 +42,14 @@ router.route('/createResetSession').get(controller.createResetSession) // reset 
 //-- GET product data
 router.route('/products').get(productsController.products) // get all products data
 router.route('/product/:productname').get(productsController.getProductByName) // get all products data
-router.route('/getcart').get(controller.verifyUser, productsController.getcart) //generate random OTP
-router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //generate random OTP
+router.route('/getcart').get(controller.verifyUser, productsController.getcart) //get a cart
+router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //get a wishlist
 //-- GET Orders
-router.route('/getorders').get(Auth, ordersController.getorders) //generate random OTP
+router.route('/getorders').get(Auth, ordersController.getorders) //get all orders
 //-- GET Categories
-router.route('/categories').get(CategoriesController.getcategories) //generate random OTP
+router.route('/categories').get(CategoriesController.getcategories) //get all categories
+//-- GET Shops
+router.route('/getshopdata').get(controller.verifyUser, ShopController.getShopData) //get a Shop Data
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
@@ -56,6 +62,6 @@ router.route('/updateaddress').put(Auth, controller.updateAddress); // is use to
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword) // used to reset password
 
 /** DELETE Methods */
-router.route('/removeaddress').delete(Auth, controller.removeAddress); // is use to add user address
+router.route('/removeaddress').delete(Auth, controller.removeAddress); // is use to remove user address
 
 export default router
