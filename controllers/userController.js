@@ -458,7 +458,7 @@ export async function removeAddress(req, res) {
 
         await userData.save();
 
-        res.status(200).json({ success: true, msg: 'Address removed successfully' });
+        res.status(200).json({ success: true, data:userData,msg: 'Address removed successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });

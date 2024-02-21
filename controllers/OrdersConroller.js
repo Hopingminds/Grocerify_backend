@@ -38,7 +38,7 @@ export async function order(req, res) {
         if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
         
         // Find the cart for the user
-        let order = await OrdersModel.findOne({ _id:userID }).populate('products.product');
+        let order = await OrdersModel.findOne({ _id:userID });
 
         // If the user has no cart, create a new one
         if (!order) {
