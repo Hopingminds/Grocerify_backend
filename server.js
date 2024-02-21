@@ -24,7 +24,7 @@ const allowedIPs = ENV.ALLOWED_IPS;
 // Middleware to check if request is coming from allowed IP addresses
 const allowOnlyFromAllowedIPs = (req, res, next) => {
     const clientIP = req.ip.replace('::ffff:', '');
-    console.log(clientIP);
+    // console.log(clientIP);
     if (allowedIPs.includes(clientIP)) {
         next(); // Allow request to proceed
     } else {

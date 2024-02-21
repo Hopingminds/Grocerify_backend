@@ -31,7 +31,7 @@ router.route('/order').post(Auth, ordersController.order); // is use to remove f
 router.route('/addcategory').post(CategoriesController.addcategory); // is use to add a category
 router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is use to add a subcategory
 //-- POST Shop
-router.route('/addshop').post(controller.verifyUser,ShopController.registerShop) 
+router.route('/addshop').post(ShopController.registerShop) 
 
 
 /** GET Methods */

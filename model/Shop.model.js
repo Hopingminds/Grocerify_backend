@@ -1,13 +1,17 @@
 import mongoose from "mongoose";
-import UserModel from "./User.model.js";
-
 export const ShopSchema = new mongoose.Schema({
     shopName: {
         type: String
     },
-    Owner:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: UserModel,
+    OwnerEmail: {
+        type: String,
+        required : [true, "Please provide a unique email"],
+        unique: true,
+    },
+    OwnerName: { type: String},
+    OwnerNumber : { type : Number},
+    OwnerAddress: {
+        type:String
     },
     BusinessLicenceNumber: {
         type: String

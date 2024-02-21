@@ -2,11 +2,11 @@ import shopModel from '../model/Shop.model.js'
 
 /** POST: http://localhost:8080/api/addshop
 * @body : {
-    "mobile":"9608945441",
-        or
-    "email": "abc@gmail.com"
-
     "shopName": "Vivek Criayana Store",
+	"OwnerEmail": "vivekdude69@gmail.com",
+	"OwnerName": "Vivek Kumar",
+	"OwnerNumber": "2136782340",
+	"OwnerAddress": "475-B Type-2 RCF Kapurthala, Punjab - 144602",
     "BusinessLicenceNumber": "AB1234BUSS567",
     "BusinessRegistrationNumber": "BUS123456",
     "TaxIdentificationNumber": "JYNPK7464J",
@@ -48,42 +48,5 @@ export async function registerShop(req, res) {
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ success: false, msg: 'Internal server error' })
-	}
-}
-
-/** GET: http://localhost:8080/api/getshopdata 
-    query:{
-        --pass only one email or mobile according to reset with mobile or reset with email
-        "email": "example@gmail.com",
-        "mobile": 8009860560,
-    }
-*/
-export async function getShopData(req, res) {
-	let userID = req.userID
-	try {
-		// Find the cart document and populate the products field with product data
-		const shopData = await shopModel
-			.findOne({ Owner: userID })
-			.populate('Owner')
-		const shopWithoutPassword = {
-			...shopData._doc,
-			Owner: {
-				...shopData.Owner._doc,
-				password: undefined,
-			},
-		}
-		if (!shopData) {
-			return res
-				.status(404)
-				.json({ success: false, message: 'No shop found!' })
-		}
-
-		res.status(200).json({ success: true, shop: shopWithoutPassword })
-	} catch (error) {
-		console.error(error)
-		res.status(500).json({
-			success: false,
-			message: 'Internal server error',
-		})
 	}
 }
