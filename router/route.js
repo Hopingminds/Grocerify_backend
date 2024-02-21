@@ -36,6 +36,7 @@ router.route('/addshop').post(ShopController.registerShop)
 
 /** GET Methods */
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username
+router.route('/user/address/:addressid').get(controller.verifyUser, controller.getaddressbyid) // reset all variables
 router.route('/generateRestPwdOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
 router.route('/verifyRestPwdOTP').get(controller.verifyRestPwdOTP) // verify generated OTP
 router.route('/createResetSession').get(controller.createResetSession) // reset all variables

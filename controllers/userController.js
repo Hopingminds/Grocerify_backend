@@ -519,3 +519,20 @@ export async function updateAddress(req, res) {
         res.status(500).json({ success: false, msg: 'Internal server error' });
     }
 }
+
+// get address by id
+/** GET: http://localhost:8080/api/address/:addressid */
+export async function getaddressbyid(req, res) {
+	const {addressid} = req.params;
+	let userID = req.userID
+	try {
+        const addressData = await UserModel.findOne({_id: userID, 'address._id': addressid});
+        if (!addressData) {
+            return res.status(404).json({ success: false, msg: 'Address Data not found' });
+        }
+        res.status(200).json({ success: true, data:addressData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
+    }
+}
