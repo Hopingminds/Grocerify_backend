@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import productsModel from './Products.model.js'
 export const ShopSchema = new mongoose.Schema({
     shopName: {
         type: String
@@ -93,6 +94,10 @@ export const ShopSchema = new mongoose.Schema({
     refundPolicy: {
         type: String
     },
+    products:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: productsModel
+    }],
     "approved": {
         type:Boolean,
         default: false
