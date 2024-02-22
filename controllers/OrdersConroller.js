@@ -11,7 +11,7 @@ function percentage(percent, total) {
     "header" : "Bearer <token>"
 }
 body: {
-    "discound_coupon":{
+    "discount_coupon":{
         "coupon_code":"NEW-100",
         "discount_price":"50"
     },
@@ -29,8 +29,16 @@ body: {
         "zip": 144002,
         "type": "Office"
     },
-    "productid":"65c4ba60866d0d5a6fc4a827",
-    "quantity":2
+    "products":[
+        {
+            "productid":"65d2fdd5020dd810551d66e7",
+            "quantity":2
+        },
+        {
+            "productid":"65d2fdd5020dd810551d66e3",
+            "quantity":1
+        }
+    ]
 }
 */
 export async function order(req, res) {
