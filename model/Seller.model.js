@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { AddressSchema } from "./Address.model.js";
 
 export const SellerSchema = new mongoose.Schema({
     password: {
@@ -14,10 +13,7 @@ export const SellerSchema = new mongoose.Schema({
     },
     OwnerName: { type: String},
     OwnerNumber : { type : Number},
-    OwnerAddress: {
-        type:AddressSchema
-    },
-    profile: { type: String}
+    OwnerProfile: { type: String}
 });
 
 export default mongoose.model.Sellers || mongoose.model('Seller', SellerSchema);

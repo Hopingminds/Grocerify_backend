@@ -60,8 +60,6 @@ export async function order(req, res) {
             }
             
             let calculatedPrice = ((product.variants1_mrp_price - percentage(product['variants1_discount%'], product.variants1_mrp_price)) * quantity) - discount_coupon.discount_price
-            console.log(product.variants1_mrp_price, product['variants1_discount%'], quantity, discount_coupon.discount_price);
-            console.log(calculatedPrice);
             totalPrice += calculatedPrice
             orders.push({
                 discount_coupon,

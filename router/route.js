@@ -6,6 +6,7 @@ import * as productsController from '../controllers/productsController.js'
 import * as ordersController from '../controllers/OrdersConroller.js'
 import * as CategoriesController from '../controllers/CategoriesController.js'
 import * as ShopController from '../controllers/Shop.Controller.js'
+import * as SellerController from '../controllers/sellerController.js'
 import { registerMail } from '../controllers/mailer.js'
 import { generateMobileOTP, verifyMobileOTP } from '../controllers/mobileOtp.js'
 import Auth, { localVariables } from '../middleware/auth.js'
@@ -31,8 +32,10 @@ router.route('/order').post(Auth, ordersController.order); // is use to remove f
 router.route('/addcategory').post(CategoriesController.addcategory); // is use to add a category
 router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is use to add a subcategory
 //-- POST Shop
-router.route('/addshop').post(ShopController.registerShop) 
-
+router.route('/addshop').post(ShopController.registerShop)
+router.route('/approveshop').post(ShopController.approveshop)
+// -- POST Seller
+router.route('/registerseller').post(SellerController.registerseller)
 
 /** GET Methods */
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username

@@ -93,6 +93,10 @@ export const ShopSchema = new mongoose.Schema({
     refundPolicy: {
         type: String
     },
+    "approved": {
+        type:Boolean,
+        default: false
+    }
 });
 
 export default mongoose.model.Shops || mongoose.model('Shop', ShopSchema);
