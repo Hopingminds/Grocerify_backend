@@ -52,6 +52,8 @@ router.route('/getwishlist').get(controller.verifyUser, productsController.getwi
 router.route('/getorders').get(Auth, ordersController.getorders) //get all orders
 //-- GET Categories
 router.route('/categories').get(CategoriesController.getcategories) //get all categories
+//-- GET Seller
+router.route('/seller').get(SellerController.verifySeller, SellerController.getSeller) // user with username
 
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP

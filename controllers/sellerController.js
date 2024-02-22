@@ -11,6 +11,29 @@ function generatePassword() {
     return retVal;
 }
 
+// middleware for verify user
+export async function verifySeller(req, res, next) {
+	try {
+		const { email, mobile } = req.method == 'GET' ? req.query : req.body
+		// check the user existance
+		if (email && !mobile) {
+			let exit = await sellerModel.findOne({ email })
+			if (!exit) return res.status(404).send({ error: "Can't find seller!" })
+			req.sellerID = exit._id
+			next()
+	}
+	
+	else if (!email && mobile) {
+			let exit = await sellerModel.findOne({ mobile })
+			if (!exit) return res.status(404).send({ error: "Can't find seller!" })
+			req.sellerID = exit._id
+			next()	
+		}
+	} catch (error) {
+		return res.status(404).send({ error: 'Authentication Error' })
+	}
+}
+
 /** POST: http://localhost:8080/api/registerseller
 * @param : {
     "password" : "admin123",
@@ -60,5 +83,28 @@ export async function registerseller(req, res) {
     } catch (error) {
         console.log(error);
         return res.status(500);
+    }
+}
+
+/** GET: http://localhost:8080/api/seller 
+	query: {
+    --pass only one email or mobile according to reset with mobile or reset with email
+    "email": "example@gmail.com",
+    "mobile": 8009860560,
+}
+*/
+export async function getSeller(req, res) {
+	let sellerID = req.sellerID
+	try {
+        const sellerData = await sellerModel.findOne({_id:sellerID}).populate('Shop');
+
+        if (!sellerData) {
+            return res.status(404).json({ success: false, msg: 'User not found' });
+        }
+		const { password, ...rest } = sellerData.toObject()
+        res.status(200).json({ success: true, data:rest });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
     }
 }
