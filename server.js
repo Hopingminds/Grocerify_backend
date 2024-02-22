@@ -25,7 +25,7 @@ const allowedIPs = ENV.ALLOWED_IPS;
 const allowOnlyFromAllowedIPs = (req, res, next) => {
     const clientIP = req.ip.replace('::ffff:', '');
     // console.log(clientIP);
-    if (allowedIPs.includes(clientIP)) {
+    if (allowedIPs.includes(clientIP) && !ENV.ALLOW_ONLY_ALLOWED_IPS) {
         next(); // Allow request to proceed
     } else {
         res.status(403).send(
