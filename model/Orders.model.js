@@ -22,7 +22,7 @@ export const OrdersSchema = new mongoose.Schema({
             "ordered_on":{
                 type:Date
             },
-            "discound_coupon":{
+            "discount_coupon":{
                 "coupon_code":{
                     type: String,
                     default: null

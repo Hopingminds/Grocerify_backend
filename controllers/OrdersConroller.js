@@ -1,6 +1,11 @@
 import productsModel from '../model/Products.model.js'
 import OrdersModel from '../model/Orders.model.js'
 
+// helper function
+function percentage(percent, total) {
+    return ((percent/ 100) * total).toFixed(2)
+}
+
 /** POST: http://localhost:8080/api/order 
  * @param: {
     "header" : "Bearer <token>"
@@ -29,28 +34,50 @@ body: {
 }
 */
 export async function order(req, res) {
-	try {
+    try {
         const { userID } = req.user;
-        const {discound_coupon, shipping_address, productid, quantity} = req.body;
-        const product = await productsModel.findById(productid);
+        const { discount_coupon, shipping_address, products } = req.body;
 
         if (!userID) return res.status(401).send({ error: 'User Not Found...!' });
-        if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-        
+
+        const orders = [];
+        let totalPrice = 0;
+
+        for (const item of products) {
+            const { productid, quantity } = item;
+            const product = await productsModel.findById(productid);
+
+            if (!product) {
+                return res.status(404).json({ success: false, message: `Product with ID ${productid} not found` });
+            }
+            
+            let calculatedPrice = ((product.variants1_mrp_price - percentage(product['variants1_discount%'], product.variants1_mrp_price)) * quantity) - discount_coupon.discount_price
+            console.log(product.variants1_mrp_price, product['variants1_discount%'], quantity, discount_coupon.discount_price);
+            console.log(calculatedPrice);
+            totalPrice += calculatedPrice
+            orders.push({
+                discount_coupon,
+                shipping_address,
+                product: productid,
+                quantity,
+                order_price: calculatedPrice,
+                ordered_on: new Date()
+            });
+        }
+
         // Find the cart for the user
-        let order = await OrdersModel.findOne({ _id:userID });
+        let order = await OrdersModel.findOne({ _id: userID });
 
         // If the user has no cart, create a new one
         if (!order) {
-            order = new OrdersModel({ _id:userID, Orders: [] });
+            order = new OrdersModel({ _id: userID, Orders: [] });
         }
-        
-        let calculated_price = product.variants1_mrp_price-( product.variants1_mrp_price*product['variants1_discount%']/100 ) - discound_coupon.discount_price
-        order.Orders.push({ discound_coupon, shipping_address, product:productid, quantity, order_price:calculated_price ,ordered_on:new Date()});
+
+        order.Orders.push(...orders);
 
         await order.save();
 
-        res.status(201).json({success: true, msg: 'Ordered successfully' });
+        res.status(201).json({ success: true, msg: 'Ordered successfully', total_price: totalPrice });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });
