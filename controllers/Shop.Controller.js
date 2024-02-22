@@ -75,7 +75,7 @@ export async function approveshop(req, res) {
                 }
             },{
                 async status(status){
-                    console.log(status);
+                    // console.log(status);
                     if (status === 201) {
                         await shopModel.updateOne({ _id: shopID }, {approved:approved})
                         registerMail({
@@ -85,11 +85,11 @@ export async function approveshop(req, res) {
                                 subject: 'Congratulations - Shop Approved!',
                                 text: `Congratulations your shop is now approved.
                                 Go to the link http://localhost/merchant/forgotpassword 
-                                to reset your id password with email.`
+                                to reset your password with email.`
                             }
                         },{
                             status(status) {
-                                console.log(status);
+                                // console.log(status);
                                 if (status === 200) {
                                     return res.status(200).json({ success: true, msg: 'Shop approved and login credentials mailed to owner.' })
                                 } else{
