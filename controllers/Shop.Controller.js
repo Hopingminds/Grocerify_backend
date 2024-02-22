@@ -71,7 +71,7 @@ export async function approveshop(req, res) {
             
             registerseller({
                 body:{
-                    OwnerEmail:shop.OwnerEmail, OwnerName:shop.OwnerName, OwnerNumber:shop.OwnerNumber
+                    OwnerEmail:shop.OwnerEmail, OwnerName:shop.OwnerName, OwnerNumber:shop.OwnerNumber, Shop: shop._id
                 }
             },{
                 async status(status){

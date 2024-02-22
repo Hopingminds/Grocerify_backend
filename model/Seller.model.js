@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import ShopModel from "./Shop.model.js";
 export const SellerSchema = new mongoose.Schema({
     password: {
         type: String,
@@ -13,7 +13,11 @@ export const SellerSchema = new mongoose.Schema({
     },
     OwnerName: { type: String},
     OwnerNumber : { type : Number},
-    OwnerProfile: { type: String}
+    OwnerProfile: { type: String},
+    Shop:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: ShopModel,
+    },
 });
 
 export default mongoose.model.Sellers || mongoose.model('Seller', SellerSchema);

@@ -22,7 +22,7 @@ function generatePassword() {
 */
 export async function registerseller(req, res) {
     try {
-        const { OwnerEmail, OwnerName, OwnerNumber, OwnerProfile} = req.body;
+        const { OwnerEmail, OwnerName, OwnerNumber, OwnerProfile, Shop} = req.body;
 
         // check for existing mobile number
         const existMobile = sellerModel.findOne({ OwnerNumber }).exec();
@@ -48,7 +48,8 @@ export async function registerseller(req, res) {
                 OwnerProfile: OwnerProfile || '',
                 OwnerEmail, 
                 OwnerName, 
-                OwnerNumber
+                OwnerNumber,
+                Shop
             });
 
             // Save the seller
