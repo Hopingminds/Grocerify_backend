@@ -28,21 +28,15 @@ export const productSchema = new mongoose.Schema({
     "parent_category_name":{
 		type: String,
 	},
-    "parent_category_image":{
-		type: String,
-	},
+    // "parent_category_image":{
+	// 	type: String,
+	// },
     "sub_category_name":{
 		type: String,
 	},
-    "sub_category_image":{
-		type: String,
-	},
-    "variants1_id":{
-		type: Number,
-	},
-    "variants1_sku":{
-		type: String,
-	},
+    // "sub_category_image":{
+	// 	type: String,
+	// },
     "variants1_weight":{
 		type: String,
 	},
@@ -52,9 +46,6 @@ export const productSchema = new mongoose.Schema({
     "variants1_discount%":{
 		type: Number,
 	},
-    "variants1_sort":{
-		type: Number,
-	},
     "variants1_unit_type":{
 		type: String,
 	},
@@ -62,7 +53,7 @@ export const productSchema = new mongoose.Schema({
 		type: Number,
 	},
 	"stock":{
-		type: Number,
+		type: String,
 		default: 10
 	}
 })

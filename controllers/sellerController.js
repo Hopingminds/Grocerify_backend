@@ -1,5 +1,7 @@
 import sellerModel from '../model/Seller.model.js'
 import bcrypt from 'bcrypt'
+import ShopModel from '../model/Shop.model.js';
+import ProductsModel from '../model/Products.model.js';
 // helper function
 function generatePassword() {
     var length = 8,
@@ -99,10 +101,49 @@ export async function getSeller(req, res) {
         const sellerData = await sellerModel.findOne({_id:sellerID}).populate('Shop');
 
         if (!sellerData) {
-            return res.status(404).json({ success: false, msg: 'User not found' });
+            return res.status(404).json({ success: false, msg: 'Seller not found' });
         }
 		const { password, ...rest } = sellerData.toObject()
         res.status(200).json({ success: true, data:rest });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, msg: 'Internal server error' });
+    }
+}
+
+/** POST: http://localhost:8080/api/addproduct 
+ * 
+*/
+export async function addProduct(req, res) {
+	let sellerID = req.sellerID
+    let {productData} = req.body
+	try {
+        const sellerData = await sellerModel.findOne({_id:sellerID})
+        
+        if (!sellerData) {
+            return res.status(404).json({ success: false, msg: 'Seller not found' });
+        }
+
+        let shop = await ShopModel.findOne({ _id:sellerData.Shop });
+
+        if (!shop) {
+            return res.status(404).json({ success: false, msg: 'Seller has no registred shop.' });
+        }
+        
+        const product = new ProductsModel(productData);
+
+        // Save the seller
+        await product.save().then(data=>{
+			try {
+                shop.products.push(data._id)
+            } catch (err) {
+                return res.status(500).json({ success: false, msg: 'Internal server error' });
+            }
+		});
+
+        await shop.save()
+
+        res.status(200).json({ success: true, msg: 'Product added successfully!' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });

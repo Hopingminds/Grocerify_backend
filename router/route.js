@@ -22,6 +22,7 @@ router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWith
 //-- File Handler
 router.route('/upload').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
 //-- POST product data
+router.route('/addproduct').post(SellerController.verifySeller, SellerController.addProduct)
 router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to add to cart
 router.route('/removefromcart').post(controller.verifyUser, productsController.removeFromCart); // is use to remove from cart
 router.route('/addtowishlist').post(controller.verifyUser, productsController.addtowishlist); // is use to add to wishlist
