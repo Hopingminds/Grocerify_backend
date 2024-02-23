@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import productsModel from './Products.model.js'
+import ProductsModel from './Products.model.js'
 export const ShopSchema = new mongoose.Schema({
     shopName: {
         type: String
@@ -96,7 +96,7 @@ export const ShopSchema = new mongoose.Schema({
     },
     products:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: productsModel
+        ref: 'ProductsModel'
     }],
     "approved": {
         type:Boolean,

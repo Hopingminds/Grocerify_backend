@@ -3,7 +3,7 @@ import cartModel from '../model/Cart.model.js'
 import wishlistModel from '../model/Wishlist.model.js'
 /** GET: http://localhost:8080/api/products */
 export async function products(req, res) {
-	let {category,subcategory,sort,price_min,price_max,search} = req.query
+	let {category,subcategory,sort,price_min,price_max,search,populate} = req.query
 	// console.log(category,subcategory,sort,price_min,price_max);
 	try {
 		let query = {};
@@ -37,7 +37,7 @@ export async function products(req, res) {
 			sortObj.variants1_mrp_price = -1;
 		}
 		
-		const products = await productModel.find(query).sort(sortObj)
+		const products = await productModel.find(query).sort(sortObj).populate(populate)
 		res.status(200).json(products)
 	} catch (err) {
 		res.status(500).send('Internal Server Error')
