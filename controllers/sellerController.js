@@ -112,7 +112,7 @@ export async function getSeller(req, res) {
 }
 
 /** POST: http://localhost:8080/api/addproduct 
- body: {
+ * body: {
     "email": "sahilkumar142002@gmail.com",
     "productData":{
         "slug":"apple-fruit",
