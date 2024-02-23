@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import ShopModel from "./Shop.model.js";
 export const productSchema = new mongoose.Schema({
 	"slug":{
 		type: String,
@@ -55,6 +55,10 @@ export const productSchema = new mongoose.Schema({
 	"stock":{
 		type: String,
 		default: 10
+	},
+	"store":{
+		type: mongoose.Schema.Types.ObjectId,
+        ref: ShopModel
 	}
 })
 

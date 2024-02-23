@@ -65,6 +65,7 @@ export async function upload(req, res) {
 		if (typeof sheetData[index].product_videos_url === 'string') {
 			sheetData[index].product_videos_url = sheetData[index].product_videos_url.split('\n')
 		}
+		element.store = sellerID
 	}
 	try {
 		// Insert data into MongoDB using Mongoose model
