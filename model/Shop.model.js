@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import ProductsModel from './Products.model.js'
 export const ShopSchema = new mongoose.Schema({
     shopName: {
         type: String
@@ -96,7 +95,7 @@ export const ShopSchema = new mongoose.Schema({
     },
     products:[{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'ProductsModel'
+        ref: 'inventory'
     }],
     "approved": {
         type:Boolean,

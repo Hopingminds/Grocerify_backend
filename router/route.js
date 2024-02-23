@@ -47,6 +47,7 @@ router.route('/createResetSession').get(controller.createResetSession) // reset 
 //-- GET product data
 router.route('/products').get(productsController.products) // get all products data
 router.route('/product/:productname').get(productsController.getProductByName) // get all products data
+router.route('/productsbystore').get(SellerController.productsbystore) // get all products data
 router.route('/getcart').get(controller.verifyUser, productsController.getcart) //get a cart
 router.route('/getwishlist').get(controller.verifyUser, productsController.getwishlist) //get a wishlist
 //-- GET Orders

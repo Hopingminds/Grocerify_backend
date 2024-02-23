@@ -28,15 +28,9 @@ export const productSchema = new mongoose.Schema({
     "parent_category_name":{
 		type: String,
 	},
-    // "parent_category_image":{
-	// 	type: String,
-	// },
     "sub_category_name":{
 		type: String,
 	},
-    // "sub_category_image":{
-	// 	type: String,
-	// },
     "variants1_weight":{
 		type: String,
 	},

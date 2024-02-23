@@ -149,3 +149,60 @@ export async function addProduct(req, res) {
         res.status(500).json({ success: false, msg: 'Internal server error' });
     }
 }
+
+export async function productsbystore(req, res) {
+    let { category, subcategory, sort, price_min, price_max, search, shop } = req.query;
+
+    if (!shop) {
+        return res.status(500).send('No shop id passed.');
+    }
+
+    try {
+        let query = { store: shop }; // Query for products belonging to the specified shop
+
+        // Add category and subcategory to the query if provided
+        if (category) {
+            query.parent_category_name = category;
+        }
+        if (subcategory) {
+            query.sub_category_name = subcategory;
+        }
+
+        // Add price range to the query if provided
+        if (price_min !== undefined && price_max !== undefined) {
+            query.variants1_mrp_price = { $gte: price_min, $lte: price_max };
+        } else if (price_min !== undefined) {
+            query.variants1_mrp_price = { $gte: price_min };
+        } else if (price_max !== undefined) {
+            query.variants1_mrp_price = { $lte: price_max };
+        }
+
+        if (search) {
+            query.products_title = { $regex: search, $options: 'i' };
+        }
+
+        // Build the sort object based on the 'sort' parameter
+        let sortObj = {};
+        if (sort === 'price_asc') {
+            sortObj.variants1_mrp_price = 1;
+        } else if (sort === 'price_desc') {
+            sortObj.variants1_mrp_price = -1;
+        }
+
+        // Find shop and populate products based on the query and sort criteria
+        const shopWithProducts = await ShopModel.findById(shop).populate({
+            path: 'products',
+            match: query, // Apply the query
+            options: { sort: sortObj } // Apply the sort
+        });
+
+        if (!shopWithProducts) {
+            return res.status(404).send('Shop not found');
+        }
+
+        res.status(200).json(shopWithProducts.products);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+}
