@@ -32,7 +32,7 @@ export async function handleFileUpload(req, res, next) {
 	})
 }
 
-/** POST: http://localhost:8080/api/upload/:sellerEmail 
+/** POST: http://localhost:8080/api/upload/_id 
 * @param : {
     "file":file.xlsx
 }
@@ -41,7 +41,11 @@ export async function handleFileUpload(req, res, next) {
 export async function upload(req, res) {
 	const sheetData = req.sheetData
 	let {sellerID} = req.params
-	const sellerData = await sellerModel.findOne({OwnerEmail:sellerID})
+	if (!sellerID) {
+		return res.status(404).json({ success: false, msg: 'SellerID required.' });
+	}
+
+	const sellerData = await sellerModel.findOne({_id:sellerID})
     if (!sellerData) {
         return res.status(404).json({ success: false, msg: 'Seller not found' });
     }
