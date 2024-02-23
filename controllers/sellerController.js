@@ -112,7 +112,34 @@ export async function getSeller(req, res) {
 }
 
 /** POST: http://localhost:8080/api/addproduct 
- * 
+ body: {
+    "email": "sahilkumar142002@gmail.com",
+    "productData":{
+        "slug":"apple-fruit",
+        "products_title":"Apple Fruit",
+        "products_description":"An apple is a round, edible fruit produced by an apple tree. Apple trees are cultivated worldwide and are the most widely grown species in the genus Malus. The tree originated in Central Asia, where its wild ancestor, Malus sieversii, is still found.",
+        "brand":"",
+        "product_primary_image_url":"https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg",
+        "product_images_url":[
+        "https://cdn.britannica.com/22/187222-050-07B17FB6/apples-on-a-tree-branch.jpg",
+        "https://domf5oio6qrcr.cloudfront.net/medialibrary/11525/0a5ae820-7051-4495-bcca-61bf02897472.jpg",
+        "https://static.tnn.in/thumb/msid-94915915,thumbsize-65898,width-1280,height-720,resizemode-75/94915915.jpg"
+        ],
+        "product_videos_url":[
+            "https://www.youtube.com/watch?v=zSWq8qI_cN0",
+            "https://www.youtube.com/watch?v=zSWq8qI_cN0"
+        ],
+        "tags":"Featured Popular",
+        "parent_category_name":"Fruits",
+        "sub_category_name":"Apple",
+        "variants1_weight":"500gm",
+        "variants1_mrp_price":100,
+        "variants1_discount%":5,
+        "variants1_unit_type":"Fruit",
+        "rating":3,
+        "stock":"40 K.g."
+    }
+    }
 */
 export async function addProduct(req, res) {
 	let sellerID = req.sellerID
@@ -150,6 +177,7 @@ export async function addProduct(req, res) {
     }
 }
 
+/** GET: http://localhost:8080/api/productsbystore */
 export async function productsbystore(req, res) {
     let { category, subcategory, sort, price_min, price_max, search, shop } = req.query;
 
