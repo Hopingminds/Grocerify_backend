@@ -20,7 +20,7 @@ router.route('/authenticate').post(controller.verifyUser,(req,res)=>res.end()) /
 router.route('/loginWithEmail').post(controller.verifyUser,controller.loginWithEmail) // login in app with email
 router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWithMobile) // login in app with mobile
 //-- File Handler
-router.route('/upload').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
+router.route('/upload/:sellerID').post(fileController.handleFileUpload, fileController.upload) // upload xlsx file
 //-- POST product data
 router.route('/addproduct').post(SellerController.verifySeller, SellerController.addProduct)
 router.route('/addtocart').post(controller.verifyUser, productsController.addToCart); // is use to add to cart

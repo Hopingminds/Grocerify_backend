@@ -1,4 +1,6 @@
 import productModel from '../model/Products.model.js'
+import sellerModel from '../model/Seller.model.js'
+import ShopModel from '../model/Shop.model.js'
 import xlsx from 'xlsx'
 import multer from 'multer'
 import slugify from 'slugify'
@@ -30,7 +32,7 @@ export async function handleFileUpload(req, res, next) {
 	})
 }
 
-/** POST: http://localhost:8080/api/upload 
+/** POST: http://localhost:8080/api/upload/:sellerEmail 
 * @param : {
     "file":file.xlsx
 }
@@ -38,6 +40,17 @@ export async function handleFileUpload(req, res, next) {
 
 export async function upload(req, res) {
 	const sheetData = req.sheetData
+	let {sellerID} = req.params
+	const sellerData = await sellerModel.findOne({OwnerEmail:sellerID})
+    if (!sellerData) {
+        return res.status(404).json({ success: false, msg: 'Seller not found' });
+    }
+
+	let shop = await ShopModel.findOne({ _id:sellerData.Shop });
+    if (!shop) {
+        return res.status(404).json({ success: false, msg: 'Seller has no registred shop.' });
+    }
+
 	// sheetData.slug = slugify(products_title)
 	for (let index = 0; index < sheetData.length; index++) {
 		const element = sheetData[index];
@@ -51,10 +64,15 @@ export async function upload(req, res) {
 	}
 	try {
 		// Insert data into MongoDB using Mongoose model
-		await productModel.insertMany(sheetData)
+		await productModel.insertMany(sheetData).then(data=>{
+			data.forEach(data => {
+				shop.products.push(data._id)
+			});
+		})
+		await shop.save()
 		res.status(200).send('File uploaded successfully.')
 	} catch (err) {
-		console.log(err);
+		// console.log(err);
 		res.status(500).send('Internal Server Error')
 	}
 }
