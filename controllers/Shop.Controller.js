@@ -28,7 +28,12 @@ import { registerMail } from './mailer.js'
     "isProvideDeliveryService": true,
     "deliveryArea":"Google Map Data Here",
     "deliveryCharges": 60,
-    "shopImage":"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
+	"product_primary_image_url": "https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
+    "shopImage":[
+		"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
+		"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
+		"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0"
+	]
     "termsAndCondition": "terms And Condition here",
     "privacyPolicy":"privacy Policy here",
     "returnPolicy" : "return Policy here",
