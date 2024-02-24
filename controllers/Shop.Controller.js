@@ -58,60 +58,61 @@ export async function registerShop(req, res) {
     }
 */
 export async function approveshop(req, res) {
-    let {shopID, approved} = req.body
-    let shop = await shopModel.findOne({ _id: shopID });
-    
-    try {
-        // If the user has no cart, create a new one
-        if (!shop) {
-            return res.status(500).json({ success: false, msg: 'Wrong shop ID' })
-        }
-        
-        if (approved && !shop.approved) {
-            
-            registerseller({
-                body:{
-                    OwnerEmail:shop.OwnerEmail, OwnerName:shop.OwnerName, OwnerNumber:shop.OwnerNumber, Shop: shop._id
-                }
-            },{
-                async status(status){
-                    if (status === 201) {
-                        await shopModel.updateOne({ _id: shopID }, {approved:approved})
-                        registerMail({
-                            body: {
-                                username: shop.OwnerName,
-                                userEmail: shop.OwnerEmail,
-                                subject: 'Congratulations - Shop Approved!',
-                                text: `Congratulations your shop is now approved.
-                                Go to the link http://localhost/merchant/forgotpassword 
-                                to reset your password with email.`
-                            }
-                        },{
-                            status(status) {
-                                if (status === 200) {
-                                    return res.status(200).json({ success: true, msg: 'Shop approved and login credentials mailed to owner.' })
-                                } else{
-                                    return res.status(200).json({ success: true, msg: 'Shop approved but failed to send mail', mail: shop.OwnerEmail})
-                                }
-                            }
-                        })
-                    } else{
-                        return res.status(500).json({ success: false, msg: 'User with same email or phone exsist.'})
-                    }
-                }
-            })
-        }else{
-            return res.status(500).json({ success: false, msg: 'Shop is already approved.'})
-        }
-        if (!approved) {
-            await shopModel.deleteOne({ _id: shopID });
-            return res.status(200).json({ success: true, msg: 'Shop is set to not approved. Mailed user to reapply.' })
-        }
+	let { shopID, approved } = req.body
+	let shop = await shopModel.findOne({ _id: shopID })
 
-    } catch (error) {
-        console.error(error)
+	try {
+		// If the user has no cart, create a new one
+		if (!shop) {
+			return res
+				.status(500)
+				.json({ success: false, msg: 'Wrong shop ID' })
+		}
+
+		if (approved && !shop.approved) {
+			await shopModel.updateOne({ _id: shopID }, { approved: approved })
+			registerMail(
+				{
+					body: {
+						username: shop.OwnerName,
+						userEmail: shop.OwnerEmail,
+						subject: 'Congratulations - Shop Approved!',
+						text: `Congratulations your shop is now approved.
+                                Go to the link http://localhost/merchant/forgotpassword 
+                                to reset your password with email.`,
+					},
+				},
+				{
+					status(status) {
+						if (status === 200) {
+							return res.status(200).json({
+								success: true,
+								msg: 'Shop approved and login credentials mailed to owner.',
+							})
+						} else {
+							return res.status(200).json({
+								success: true,
+								msg: 'Shop approved but failed to send mail',
+								mail: shop.OwnerEmail,
+							})
+						}
+					},
+				}
+			)
+		} else {
+			return res
+				.status(500)
+				.json({ success: false, msg: 'Shop is already approved.' })
+		}
+		if (!approved) {
+			await shopModel.deleteOne({ _id: shopID })
+			return res.status(200).json({
+				success: true,
+				msg: 'Shop is set to not approved.',
+			})
+		}
+	} catch (error) {
+		console.error(error)
 		res.status(500).json({ success: false, msg: 'Internal server error' })
-    }
-        
-    // approved
+	}
 }
