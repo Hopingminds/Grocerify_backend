@@ -6,7 +6,7 @@ import { registerMail } from './mailer.js'
 	"OwnerEmail": "vivekdude69@gmail.com",
 	"OwnerName": "Vivek Kumar",
 	"OwnerNumber": "2136782340",
-	"OwnerAddress": "475-B Type-2 RCF Kapurthala, Punjab - 144602",
+	"ShopAddress": "475-B Type-2 RCF Kapurthala, Punjab - 144602",
     "BusinessLicenceNumber": "AB1234BUSS567",
     "BusinessRegistrationNumber": "BUS123456",
     "TaxIdentificationNumber": "JYNPK7464J",

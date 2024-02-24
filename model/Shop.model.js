@@ -10,7 +10,7 @@ export const ShopSchema = new mongoose.Schema({
     },
     OwnerName: { type: String},
     OwnerNumber : { type : Number},
-    OwnerAddress: {
+    ShopAddress: {
         type:String
     },
     BusinessLicenceNumber: {

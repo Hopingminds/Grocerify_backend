@@ -52,7 +52,7 @@ export async function getProductByName(req, res) {
 			return res.status(501).send({ error: 'Invalid Productname' })
 
 		const checkProduct = new Promise((resolve, reject) => {
-			productModel.findOne({ slug:productname })
+			productModel.findOne({ slug:productname }).populate('stores')
 				.exec()
 				.then((product) => {
 					if (!product) {
