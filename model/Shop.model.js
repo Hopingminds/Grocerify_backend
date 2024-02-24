@@ -78,9 +78,9 @@ export const ShopSchema = new mongoose.Schema({
     paymentType: {
         type: Object
     },
-    shopImage: {
+    shopImages: [{
         type: String
-    },
+    }],
     termsAndCondition: {
         type: String
     },

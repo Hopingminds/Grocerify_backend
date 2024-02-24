@@ -13,7 +13,16 @@ export const SellerSchema = new mongoose.Schema({
     },
     OwnerName: { type: String},
     OwnerMobile : { type : Number},
+    OwnerDOB:{
+        type: String
+    },
     OwnerProfile: { type: String},
+    Aadhar:{
+        type: Number
+    },
+    PanCard:{
+        type: String
+    },
     Shop:{
         type: mongoose.Schema.Types.ObjectId,
         ref: ShopModel,
