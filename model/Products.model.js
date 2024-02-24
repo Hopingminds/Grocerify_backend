@@ -50,10 +50,12 @@ export const productSchema = new mongoose.Schema({
 		type: String,
 		default: 10
 	},
-	"store":{
-		type: mongoose.Schema.Types.ObjectId,
-        ref: ShopModel
-	}
+	"stores":[
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: ShopModel
+		}
+	]
 })
 
 export default mongoose.model.inventories || mongoose.model('inventory', productSchema)

@@ -32,7 +32,7 @@ export async function handleFileUpload(req, res, next) {
 	})
 }
 
-/** POST: http://localhost:8080/api/upload/_id 
+/** POST: http://localhost:8080/api/upload 
 * @param : {
     "file":file.xlsx
 }
@@ -40,21 +40,6 @@ export async function handleFileUpload(req, res, next) {
 
 export async function upload(req, res) {
 	const sheetData = req.sheetData
-	let {sellerID} = req.params
-	if (!sellerID) {
-		return res.status(404).json({ success: false, msg: 'SellerID required.' });
-	}
-
-	const sellerData = await sellerModel.findOne({_id:sellerID})
-    if (!sellerData) {
-        return res.status(404).json({ success: false, msg: 'Seller not found' });
-    }
-
-	let shop = await ShopModel.findOne({ _id:sellerData.Shop });
-    if (!shop) {
-        return res.status(404).json({ success: false, msg: 'Seller has no registred shop.' });
-    }
-
 	// sheetData.slug = slugify(products_title)
 	for (let index = 0; index < sheetData.length; index++) {
 		const element = sheetData[index];
@@ -65,16 +50,10 @@ export async function upload(req, res) {
 		if (typeof sheetData[index].product_videos_url === 'string') {
 			sheetData[index].product_videos_url = sheetData[index].product_videos_url.split('\n')
 		}
-		element.store = shop._id
 	}
 	try {
 		// Insert data into MongoDB using Mongoose model
-		await productModel.insertMany(sheetData).then(data=>{
-			data.forEach(data => {
-				shop.products.push(data._id)
-			});
-		})
-		await shop.save()
+		await productModel.insertMany(sheetData)
 		res.status(200).send('File uploaded successfully.')
 	} catch (err) {
 		// console.log(err);

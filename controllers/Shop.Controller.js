@@ -1,6 +1,5 @@
 import shopModel from '../model/Shop.model.js'
 import { registerMail } from './mailer.js'
-import { registerseller } from './sellerController.js'
 /** POST: http://localhost:8080/api/addshop
 * @body : {
     "shopName": "Vivek Criayana Store",
