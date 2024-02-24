@@ -12,7 +12,7 @@ export const SellerSchema = new mongoose.Schema({
         unique: true,
     },
     OwnerName: { type: String},
-    OwnerNumber : { type : Number},
+    OwnerMobile : { type : Number},
     OwnerProfile: { type: String},
     Shop:{
         type: mongoose.Schema.Types.ObjectId,
