@@ -24,7 +24,6 @@ export async function verifySeller(req, res, next) {
 			if (!exit)
 				return res.status(404).send({ error: "Can't find seller!" })
 			req.sellerID = exit._id
-			console.log(exit._id)
 			next()
 		} else if (!email && mobile) {
 			let exit = await sellerModel.findOne({ mobile })
@@ -89,7 +88,6 @@ export async function registerseller(req, res) {
 			return res.status(201)
 		}
 	} catch (error) {
-		console.log(error)
 		return res.status(500)
 	}
 }
