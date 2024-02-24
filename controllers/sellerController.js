@@ -113,47 +113,60 @@ export async function getSeller(req, res) {
 
 /** POST: http://localhost:8080/api/addstoreproducts 
  * body: {
-    "email": "sahilkumar142002@gmail.com",
-    "productID": ""
+        "email": "sahilkumar142002@gmail.com",
+        "productIDs": [
+            "65d98e068f61d2603fe62548",
+            "65d98e068f61d2603fe62549",
+            "65d98e068f61d2603fe6254c"
+        ]
     }
 */
 export async function addstoreproducts(req, res) {
-	let sellerID = req.sellerID
-    let {productID} = req.body
-	try {
-        const sellerData = await sellerModel.findOne({_id:sellerID})
-        
+    let sellerID = req.sellerID;
+    let { productIDs } = req.body; // Assuming productIDs is an array of product IDs
+    let alredypresent  = []
+    try {
+        const sellerData = await sellerModel.findOne({ _id: sellerID });
+
         if (!sellerData) {
             return res.status(404).json({ success: false, msg: 'Seller not found' });
         }
 
-        let shop = await ShopModel.findOne({ _id:sellerData.Shop });
+        let shop = await ShopModel.findOne({ _id: sellerData.Shop });
 
         if (!shop) {
-            return res.status(404).json({ success: false, msg: 'Seller has no registred shop.' });
+            return res.status(404).json({ success: false, msg: 'Seller has no registered shop.' });
         }
-        
-        const product = await ProductsModel.findOne({_id:productID})
 
-        product.stores.push(shop._id)
-        // Save the seller
-        await product.save().then(data=>{
-			try {
-                shop.products.push(data._id)
-            } catch (err) {
-                return res.status(500).json({ success: false, msg: 'Internal server error' });
+        for (const productID of productIDs) {
+            const product = await ProductsModel.findOne({ _id: productID });
+
+            if (!product) {
+                return res.status(404).json({ success: false, msg: `Product with ID ${productID} not found` });
             }
-		});
+            if (product.stores.includes(shop._id)) {
+                alredypresent.push(productID)
+            } else{
+                product.stores.push(shop._id);
+                await product.save().then(data => {
+                    try {
+                        shop.products.push(data._id);
+                    } catch (err) {
+                        return res.status(500).json({ success: false, msg: 'Internal server error' });
+                    }
+                });
+            }
+            
+        }
 
-        await shop.save()
+        await shop.save();
 
-        res.status(200).json({ success: true, msg: 'Product added successfully!' });
+        res.status(200).json({ success: true, msg: 'Products added successfully!', alredypresent });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, msg: 'Internal server error' });
     }
 }
-
 /** GET: http://localhost:8080/api/productsbystore */
 export async function productsbystore(req, res) {
     let { category, subcategory, sort, price_min, price_max, search, shop } = req.query;
