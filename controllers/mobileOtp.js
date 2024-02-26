@@ -2,6 +2,7 @@ import ENV from '../config.js'
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 import jwt from 'jsonwebtoken'
+import sellerModel from '../model/Seller.model.js'
 const accountSid = ENV.TWILIO_ACCOUNT_SID
 const authToken = ENV.TWILIO_AUTH_TOKEN
 const verifySid = ENV.TWILIO_ACCOUNT_VERIFY_SID
@@ -55,7 +56,6 @@ export async function verifyMobileOTP(req, res) {
 */
 export async function verifySellerLoginMobileOTP(req, res) {
 	const { mobile, otp } = req.body
-
 	client.verify.v2
 		.services(verifySid)
 		.verificationChecks.create({
@@ -63,6 +63,7 @@ export async function verifySellerLoginMobileOTP(req, res) {
 			code: otp,
 		})
 		.then((verification_check) => {
+			console.log(verification_check.status);
 			try {
 				sellerModel
 					.findOne({ OwnerMobile: mobile })
@@ -89,15 +90,18 @@ export async function verifySellerLoginMobileOTP(req, res) {
 							})
 					})
 					.catch((error) => {
+						console.log(error);
 						return res
 							.status(404)
 							.send({ error: 'Mobile not Found' })
 					})
 			} catch (error) {
+				console.log(error);
 				return res.status(500).send(error)
 			}
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(500).send({ err: 'Wrong OTP' })
 		})
 }
