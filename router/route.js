@@ -38,8 +38,8 @@ router.route('/addshop').post(ShopController.registerShop)
 router.route('/approveshop').post(ShopController.approveshop)
 // -- POST Seller
 router.route('/registerseller').post(SellerController.registerseller)
-router.route('/sellerloginWithEmail').post(SellerController.verifySeller,SellerController.sellerLoginWithEmail) // login in app with email
-router.route('/sellerloginWithMobile').post(SellerController.verifySeller,SellerController.SellerLoginWithMobile) // login in app with mobile
+router.route('/sellerloginwithemail').post(SellerController.verifySeller,SellerController.sellerLoginWithEmail) // login in app with email
+router.route('/sellerloginwithmobile').post(SellerController.verifySeller,SellerController.SellerLoginWithMobile) // login in app with mobile
 /** GET Methods */
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username
 router.route('/user/address/:addressid').get(controller.verifyUser, controller.getaddressbyid) // reset all variables

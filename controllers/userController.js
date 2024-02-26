@@ -108,7 +108,7 @@ export async function loginWithEmail(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Don't password" })
+								.send({ error: "Wrong password" })
 
 						// create jwt token
 						const token = jwt.sign(
@@ -157,7 +157,7 @@ export async function loginWithMobile(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Don't password" })
+								.send({ error: "Wrong password" })
 
 						// create jwt token
 						const token = jwt.sign(

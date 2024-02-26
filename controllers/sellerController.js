@@ -52,7 +52,6 @@ export async function registerseller(req, res) {
 	try {
 		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, Shop, password, OwnerDOB } =
 			req.body
-
 		// check for existing mobile number
 		const existMobile = sellerModel.findOne({ OwnerMobile }).exec()
 
@@ -265,7 +264,7 @@ export async function productsbystore(req, res) {
 export async function sellerLoginWithEmail(req, res) {
 	const { email, password } = req.body
 	try {
-		sellerModel.findOne({ email })
+		sellerModel.findOne({ OwnerEmail:email })
 			.then((seller) => {
 				bcrypt
 					.compare(password, seller.password)
@@ -273,7 +272,7 @@ export async function sellerLoginWithEmail(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Don't password" })
+								.send({ error: "Wrong password" })
 
 						// create jwt token
 						const token = jwt.sign(
@@ -314,7 +313,7 @@ export async function sellerLoginWithEmail(req, res) {
 export async function SellerLoginWithMobile(req, res) {
 	const { mobile, password } = req.body
 	try {
-		sellerModel.findOne({ mobile })
+		sellerModel.findOne({ OwnerMobile:mobile })
 			.then((seller) => {
 				bcrypt
 					.compare(password, seller.password)
@@ -322,7 +321,7 @@ export async function SellerLoginWithMobile(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Don't password" })
+								.send({ error: "Wrong password" })
 
 						// create jwt token
 						const token = jwt.sign(
