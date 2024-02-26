@@ -16,6 +16,9 @@ export const SellerSchema = new mongoose.Schema({
     OwnerDOB:{
         type: String
     },
+    OwnerAddress: {
+        type: String
+    },
     OwnerProfile: { type: String},
     Aadhar:{
         type: Number

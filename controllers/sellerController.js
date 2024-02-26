@@ -33,13 +33,17 @@ export async function verifySeller(req, res, next) {
     "password" : "admin123",
     "OwnerEmail": "example@gmail.com",
     "OwnerName" : "bill",
+	"OwnerDOB" : "OwnerDOB"
     "OwnerMobile": 8009860560,
+	"PanCard" : "JYNPK&$^$J",
+	"Aadhar" : 475881278859,
+	"OwnerAddress": "ass-a dass asad 122309",
     "OwnerProfile": "" (not compuslory)
 }
 */
 export async function registerseller(req, res) {
 	try {
-		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, Shop, password, OwnerDOB } =
+		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, password, OwnerDOB, OwnerAddress, Aadhar, PanCard } =
 			req.body
 		// check for existing mobile number
 		const existMobile = sellerModel.findOne({ OwnerMobile }).exec()
@@ -68,8 +72,10 @@ export async function registerseller(req, res) {
 				OwnerEmail,
 				OwnerName,
 				OwnerMobile,
-				Shop,
-				OwnerDOB
+				OwnerDOB,
+				OwnerAddress,
+				Aadhar,
+				PanCard
 			})
 
 			// Save the seller
