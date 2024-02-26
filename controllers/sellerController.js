@@ -284,7 +284,8 @@ export async function sellerLoginWithEmail(req, res) {
 							msg: 'Login Successful',
 							email: seller.OwnerEmail,
 							token,
-							shop: seller?.Shop || false
+							shop: seller?.Shop || false,
+							verified: seller.Verified
 						})
 					})
 					.catch((error) => {
@@ -335,7 +336,8 @@ export async function SellerLoginWithMobile(req, res) {
 							msg: 'Login Successful',
 							email: seller.OwnerEmail,
 							token,
-							shop: seller?.Shop || false
+							shop: seller?.Shop || false,
+							verified: seller.Verified
 						})
 					})
 					.catch((error) => {
