@@ -28,7 +28,7 @@ import { registerMail } from './mailer.js'
     "isProvideDeliveryService": true,
     "deliveryArea":"Google Map Data Here",
     "deliveryCharges": 60,
-	"product_primary_image_url": "https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
+	"shop_primary_image_url": "https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
     "shopImage":[
 		"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",
 		"https://lh3.googleusercontent.com/p/AF1QipNHIMZzyYXnvQuTLm0OcMclqAihOIIUD1MIp7Vb=w1080-h608-p-no-v0",

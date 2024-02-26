@@ -78,7 +78,7 @@ export const ShopSchema = new mongoose.Schema({
     paymentType: {
         type: Object
     },
-    product_primary_image_url:{
+    shop_primary_image_url:{
         type: String
     },
     shopImages: [{
