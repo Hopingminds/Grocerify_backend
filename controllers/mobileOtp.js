@@ -1,7 +1,7 @@
 import ENV from '../config.js'
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
-
+import jwt from 'jsonwebtoken'
 const accountSid = ENV.TWILIO_ACCOUNT_SID
 const authToken = ENV.TWILIO_AUTH_TOKEN
 const verifySid = ENV.TWILIO_ACCOUNT_VERIFY_SID
@@ -24,7 +24,6 @@ export async function generateMobileOTP(req, res) {
 		})
 }
 
-
 /** POST: http://localhost:8080/api/verifyMobileOTP 
 * body : {
     "mobile" : "1234567890",
@@ -40,8 +39,65 @@ export async function verifyMobileOTP(req, res) {
 			to: `+91${mobile}`,
 			code: otp,
 		})
-		.then((verification_check) => res.status(201).send({msg: verification_check.status}))
-        .catch((err)=>{
-            res.status(500).send({ err: 'Wrong OTP' })
-        })
+		.then((verification_check) =>
+			res.status(201).send({ msg: verification_check.status })
+		)
+		.catch((err) => {
+			res.status(500).send({ err: 'Wrong OTP' })
+		})
+}
+
+/** POST: http://localhost:8080/api/verifySellerLoginMobileOTP 
+* body : {
+    "mobile" : "1234567890",
+    "otp": 0197
+}
+*/
+export async function verifySellerLoginMobileOTP(req, res) {
+	const { mobile, otp } = req.body
+
+	client.verify.v2
+		.services(verifySid)
+		.verificationChecks.create({
+			to: `+91${mobile}`,
+			code: otp,
+		})
+		.then((verification_check) => {
+			try {
+				sellerModel
+					.findOne({ OwnerMobile: mobile })
+					.then((seller) => {
+						// create jwt token
+						const token = jwt.sign(
+							{
+								sellerID: seller._id,
+								email: seller.OwnerEmail,
+								mobile: seller.OwnerMobile,
+								shop: seller?.Shop || false,
+							},
+							ENV.JWT_SECRET,
+							{ expiresIn: '24h' }
+						)
+						return res
+							.status(200)
+							.send({
+								msg: 'Login Successful',
+								email: seller.OwnerEmail,
+								token,
+								shop: seller?.Shop || false,
+								verified: seller.Verified,
+							})
+					})
+					.catch((error) => {
+						return res
+							.status(404)
+							.send({ error: 'Mobile not Found' })
+					})
+			} catch (error) {
+				return res.status(500).send(error)
+			}
+		})
+		.catch((err) => {
+			res.status(500).send({ err: 'Wrong OTP' })
+		})
 }

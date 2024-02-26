@@ -8,7 +8,7 @@ import * as CategoriesController from '../controllers/CategoriesController.js'
 import * as ShopController from '../controllers/Shop.Controller.js'
 import * as SellerController from '../controllers/sellerController.js'
 import { registerMail } from '../controllers/mailer.js'
-import { generateMobileOTP, verifyMobileOTP } from '../controllers/mobileOtp.js'
+import { generateMobileOTP, verifyMobileOTP, verifySellerLoginMobileOTP } from '../controllers/mobileOtp.js'
 import Auth, { localVariables } from '../middleware/auth.js'
 import SellerAuth, { sellerlocalVariables } from '../middleware/sellerauth.js'
 
@@ -63,6 +63,7 @@ router.route('/seller').get(SellerController.verifySeller, SellerController.getS
 // mobile OTP Verification
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
 router.route('/verifyMobileOTP').post(verifyMobileOTP) // generate mobileOTP
+router.route('/verifySellerLoginMobileOTP').post(verifySellerLoginMobileOTP) // verify seller login with otp
 
 
 /** PUT Methods */
