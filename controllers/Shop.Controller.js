@@ -120,3 +120,12 @@ export async function approveshop(req, res) {
 		res.status(500).json({ success: false, msg: 'Internal server error' })
 	}
 }
+// GET: http://localhost:8080/api/getshops
+export async function getShops(req, res) {
+	try {
+		const shops = await shopModel.find({})
+		res.status(200).json({success: true, data:shops})
+	} catch (err) {
+		res.status(500).send({success: false, msg: 'Internal Server Error'})
+	}
+}
