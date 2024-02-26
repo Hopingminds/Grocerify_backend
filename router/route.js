@@ -18,6 +18,7 @@ router.route('/register').post(controller.register)
 router.route('/addaddress').post(Auth, controller.addAddress); // is use to add user address
 router.route('/registerMail').post(registerMail) // register mail
 router.route('/authenticate').post(controller.verifyUser,(req,res)=>res.end()) // authenticate user
+router.route('/authenticateseller').post(SellerController.verifySeller,(req,res)=>res.end()) // authenticate seller
 router.route('/loginWithEmail').post(controller.verifyUser,controller.loginWithEmail) // login in app with email
 router.route('/loginWithMobile').post(controller.verifyUser,controller.loginWithMobile) // login in app with mobile
 //-- File Handler

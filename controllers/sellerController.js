@@ -4,17 +4,6 @@ import jwt from 'jsonwebtoken'
 import ENV from '../config.js'
 import ShopModel from '../model/Shop.model.js'
 import ProductsModel from '../model/Products.model.js'
-// helper function
-function generatePassword() {
-	var length = 8,
-		charset =
-			'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
-		retVal = ''
-	for (var i = 0, n = charset.length; i < length; ++i) {
-		retVal += charset.charAt(Math.floor(Math.random() * n))
-	}
-	return retVal
-}
 
 // middleware for verify seller
 export async function verifySeller(req, res, next) {
@@ -28,7 +17,7 @@ export async function verifySeller(req, res, next) {
 			req.sellerID = exit._id
 			next()
 		} else if (!email && mobile) {
-			let exit = await sellerModel.findOne({ mobile })
+			let exit = await sellerModel.findOne({ OwnerMobile:mobile })
 			if (!exit)
 				return res.status(404).send({ error: "Can't find seller!" })
 			req.sellerID = exit._id
@@ -279,7 +268,8 @@ export async function sellerLoginWithEmail(req, res) {
 							{
 								sellerID: seller._id,
 								email: seller.OwnerEmail,
-								mobile: seller.OwnerMobile
+								mobile: seller.OwnerMobile,
+								shop: seller?.Shop || false
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -288,6 +278,7 @@ export async function sellerLoginWithEmail(req, res) {
 							msg: 'Login Successful',
 							email: seller.OwnerEmail,
 							token,
+							shop: seller?.Shop || false
 						})
 					})
 					.catch((error) => {
@@ -328,7 +319,8 @@ export async function SellerLoginWithMobile(req, res) {
 							{
 								sellerID: seller._id,
 								email: seller.OwnerEmail,
-								mobile: seller.OwnerMobile
+								mobile: seller.OwnerMobile,
+								shop: seller?.Shop || false
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -337,6 +329,7 @@ export async function SellerLoginWithMobile(req, res) {
 							msg: 'Login Successful',
 							email: seller.OwnerEmail,
 							token,
+							shop: seller?.Shop || false
 						})
 					})
 					.catch((error) => {
