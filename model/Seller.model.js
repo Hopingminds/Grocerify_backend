@@ -27,6 +27,10 @@ export const SellerSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: ShopModel,
     },
+    Verified: {
+        type: Boolean,
+        default: false
+    }
 });
 
 export default mongoose.model.Sellers || mongoose.model('Seller', SellerSchema);

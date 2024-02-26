@@ -1,5 +1,7 @@
 import sellerModel from '../model/Seller.model.js'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import ENV from '../config.js'
 import ShopModel from '../model/Shop.model.js'
 import ProductsModel from '../model/Products.model.js'
 // helper function
@@ -14,11 +16,11 @@ function generatePassword() {
 	return retVal
 }
 
-// middleware for verify user
+// middleware for verify seller
 export async function verifySeller(req, res, next) {
 	try {
 		const { email, mobile } = req.method == 'GET' ? req.query : req.body
-		// check the user existance
+		// check the seller existance
 		if (email && !mobile) {
 			let exit = await sellerModel.findOne({ OwnerEmail:email })
 			if (!exit)
@@ -48,7 +50,7 @@ export async function verifySeller(req, res, next) {
 */
 export async function registerseller(req, res) {
 	try {
-		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, Shop } =
+		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, Shop, password, OwnerDOB } =
 			req.body
 
 		// check for existing mobile number
@@ -64,13 +66,12 @@ export async function registerseller(req, res) {
 		])
 
 		if (mobileExist) {
-			return res.status(400)
+			return res.status(400).send({success: false, msg: 'User with mobile already exsist.'})
 		}
 
 		if (emailExist) {
-			return res.status(400)
+			return res.status(400).send({success: false, msg: 'User with email already exsist.'})
 		}
-		let password = generatePassword()
 		if (password) {
 			const hashedPassword = await bcrypt.hash(password, 10)
 			const seller = new sellerModel({
@@ -80,15 +81,16 @@ export async function registerseller(req, res) {
 				OwnerName,
 				OwnerMobile,
 				Shop,
+				OwnerDOB
 			})
 
 			// Save the seller
 			await seller.save()
 			// Send response with _id and email
-			return res.status(201)
+			return res.status(201).send({success: true, msg: 'Seller Registred Successfully.'})
 		}
 	} catch (error) {
-		return res.status(500)
+		return res.status(500).send({success: false, msg: 'Internal Server Error.'})
 	}
 }
 
@@ -248,5 +250,106 @@ export async function productsbystore(req, res) {
 	} catch (err) {
 		console.error(err)
 		res.status(500).send('Internal Server Error')
+	}
+}
+
+
+// logins
+
+/** POST: http://localhost:8080/api/sellerloginWithEmail 
+* @param : {
+    "email" : "example123@mail.com",
+    "password" : "admin123",
+}
+*/
+export async function sellerLoginWithEmail(req, res) {
+	const { email, password } = req.body
+	try {
+		sellerModel.findOne({ email })
+			.then((seller) => {
+				bcrypt
+					.compare(password, seller.password)
+					.then((passwordCheck) => {
+						if (!passwordCheck)
+							return res
+								.status(400)
+								.send({ error: "Don't password" })
+
+						// create jwt token
+						const token = jwt.sign(
+							{
+								sellerID: seller._id,
+								email: seller.OwnerEmail,
+								mobile: seller.OwnerMobile
+							},
+							ENV.JWT_SECRET,
+							{ expiresIn: '24h' }
+						)
+						return res.status(200).send({
+							msg: 'Login Successful',
+							email: seller.OwnerEmail,
+							token,
+						})
+					})
+					.catch((error) => {
+						return res
+							.status(400)
+							.send({ error: 'Password does not match' })
+					})
+			})
+			.catch((error) => {
+				return res.status(404).send({ error: 'Email not Found' })
+			})
+	} catch (error) {
+		return res.status(500).send(error)
+	}
+}
+
+/** POST: http://localhost:8080/api/sellerloginWithMobile 
+* @param : {
+    "mobile" : "1234567890",
+    "password" : "admin123",
+}
+*/
+export async function SellerLoginWithMobile(req, res) {
+	const { mobile, password } = req.body
+	try {
+		sellerModel.findOne({ mobile })
+			.then((seller) => {
+				bcrypt
+					.compare(password, seller.password)
+					.then((passwordCheck) => {
+						if (!passwordCheck)
+							return res
+								.status(400)
+								.send({ error: "Don't password" })
+
+						// create jwt token
+						const token = jwt.sign(
+							{
+								sellerID: seller._id,
+								email: seller.OwnerEmail,
+								mobile: seller.OwnerMobile
+							},
+							ENV.JWT_SECRET,
+							{ expiresIn: '24h' }
+						)
+						return res.status(200).send({
+							msg: 'Login Successful',
+							email: seller.OwnerEmail,
+							token,
+						})
+					})
+					.catch((error) => {
+						return res
+							.status(400)
+							.send({ error: 'Password does not match' })
+					})
+			})
+			.catch((error) => {
+				return res.status(404).send({ error: 'Mobile not Found' })
+			})
+	} catch (error) {
+		return res.status(500).send(error)
 	}
 }
