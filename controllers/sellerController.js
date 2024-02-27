@@ -209,22 +209,22 @@ export async function addstoreproducts(req, res) {
 					variants1_discount_per: product_data.variants1_discount_per,
 					stock: product_data.stock,
 				})
-				// await product.save().then((data) => {
-				// 	try {
-				// 		shop.products.push(data._id)
-				// 	} catch (err) {
-				// 		return res
-				// 			.status(500)
-				// 			.json({
-				// 				success: false,
-				// 				msg: 'Internal server error',
-				// 			})
-				// 	}
-				// })
+				await product.save().then((data) => {
+					try {
+						shop.products.push(data._id)
+					} catch (err) {
+						return res
+							.status(500)
+							.json({
+								success: false,
+								msg: 'Internal server error',
+							})
+					}
+				})
 			}
 		}
 
-		// await shop.save()
+		await shop.save()
 
 		res.status(200).json({
 			success: true,
