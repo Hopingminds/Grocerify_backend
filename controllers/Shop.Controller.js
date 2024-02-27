@@ -1,3 +1,4 @@
+import SellerModel from '../model/Seller.model.js'
 import shopModel from '../model/Shop.model.js'
 import { registerMail } from './mailer.js'
 /** POST: http://localhost:8080/api/addshop
@@ -123,9 +124,37 @@ export async function approveshop(req, res) {
 // GET: http://localhost:8080/api/getshops
 export async function getShops(req, res) {
 	try {
-		const shops = await shopModel.find({})
+		const shops = await shopModel.find({approved: true})
 		res.status(200).json({success: true, data:shops})
 	} catch (err) {
 		res.status(500).send({success: false, msg: 'Internal Server Error'})
+	}
+}
+
+// GET: http://localhost:8080/api/getShop
+export async function getShop(req, res) {
+	let sellerID = req.sellerID
+	try {
+		const sellerData = await SellerModel
+			.findOne({ _id: sellerID })
+			.populate('Shop')
+
+		if (!sellerData) {
+			return res
+				.status(404)
+				.json({ success: false, msg: 'Seller not found' })
+		}
+
+		const shop = await shopModel.find({_id: sellerData.Shop}).populate('orders')
+		if (!shop) {
+			return res
+				.status(404)
+				.json({ success: false, msg: 'Shop not found' })
+		}
+		
+		res.status(200).json({success: true, data:shop})
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ success: false, msg: 'Internal server error' })
 	}
 }

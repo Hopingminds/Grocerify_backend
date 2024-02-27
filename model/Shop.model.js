@@ -103,7 +103,13 @@ export const ShopSchema = new mongoose.Schema({
     "approved": {
         type:Boolean,
         default: false
-    }
+    },
+    orders:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Orders'
+        }
+    ]
 });
 
 export default mongoose.model.Shops || mongoose.model('Shop', ShopSchema);

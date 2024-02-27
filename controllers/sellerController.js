@@ -239,8 +239,8 @@ export async function productsbystore(req, res) {
 		if (!shopWithProducts) {
 			return res.status(404).send('Shop not found')
 		}
-
-		res.status(200).json({shop:shopWithProducts})
+		let {orders, ...rest} = shopWithProducts.toObject()
+		res.status(200).json({shop:rest})
 	} catch (err) {
 		console.error(err)
 		res.status(500).send('Internal Server Error')
