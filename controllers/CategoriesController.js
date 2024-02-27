@@ -95,3 +95,20 @@ export async function getcategories(req, res) {
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
+
+/** GET: http://localhost:8080/api/categories/:categoryname */
+export async function getsubcategories(req, res) {
+	try {
+		const { categoryname } = req.params
+        const categories = await categoriesModel.findOne({Category_Name: categoryname})
+
+        if (!categories) {
+            return res.status(404).json({ success: false, message: 'Categories not found' });
+        }
+
+        res.status(200).json({ success: true, subcategories:categories.Subcategories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+}
