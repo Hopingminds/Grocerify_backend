@@ -64,34 +64,36 @@ body: {
     "products":[
         {
             "productid":"65d2fdd5020dd810551d66e7",
-            "quantity":2
+            "quantity":2,
+			"shopid": "65d2fdd5020dd810551d36e9"
         },
         {
             "productid":"65d2fdd5020dd810551d66e3",
-            "quantity":1
+            "quantity":1,
+			"shopid": "65d2fdd5020dd810551d66e9"
         }
-    ]
+    ],
 }
 */
 export async function order(req, res) {
 	try {
 		const { userID } = req.user
-		const { discount_coupon, shipping_address, products, shopid } = req.body
+		const { discount_coupon, shipping_address, products } = req.body
 
 		if (!userID)
 			return res.status(401).send({ error: 'User Not Found...!' })
-
-		let shop = await ShopModel.findOne({ _id: shopid })
-
-		if (!shop) {
-            return res.status(401).send({ error: 'Shop Not Found...!' })
-		}
 
 		const orders = []
 		let totalPrice = 0
 
 		for (const item of products) {
-			const { productid, quantity } = item
+			const { productid, quantity, shopid } = item
+			const shop = await ShopModel.findOne({ _id: shopid })
+
+			if (!shop) {
+				return res.status(404).send({ error: `Shop with ID ${shopid} not found` })
+			}
+
 			const product = await productsModel.findById(productid)
 			if (!product) {
 				return res.status(404).json({
@@ -100,11 +102,12 @@ export async function order(req, res) {
 				})
 			}
 
+			const store = product.stores.find(store => store.store.toString() === shopid);
 			let calculatedPrice =
-				(product.variants1_mrp_price -
+				(store.variants1_mrp_price -
 					percentage(
-						product['variants1_discount%'],
-						product.variants1_mrp_price
+						store['variants1_discount_per'],
+						store.variants1_mrp_price
 					)) *
 					quantity -
 				discount_coupon.discount_price
@@ -117,17 +120,13 @@ export async function order(req, res) {
 				quantity,
 				order_price: calculatedPrice,
 				ordered_on: new Date(),
-				ordered_by: userID
+				ordered_by: userID,
+				shop: shopid
 			})
 		}
 
-	
-		await OrdersModel.insertMany(orders).then(data=>{
-			data.forEach(order => {
-				shop.orders.push(order._id)
-			});
-		})
-		await shop.save()
+		await OrdersModel.insertMany(orders)
+
 		res.status(201).json({
 			success: true,
 			msg: 'Ordered successfully',

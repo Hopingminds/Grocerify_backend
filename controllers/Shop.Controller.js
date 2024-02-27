@@ -1,3 +1,4 @@
+import OrdersModel from '../model/Orders.model.js'
 import SellerModel from '../model/Seller.model.js'
 import shopModel from '../model/Shop.model.js'
 import { registerMail } from './mailer.js'
@@ -148,14 +149,9 @@ export async function ordersbyshop(req, res) {
 				.json({ success: false, msg: 'Seller not found' })
 		}
 
-		const shop = await shopModel.findOne({_id: sellerData.Shop}).populate('orders')
-		if (!shop) {
-			return res
-				.status(404)
-				.json({ success: false, msg: 'Shop not found' })
-		}
+		const orders = await OrdersModel.find({shop: sellerData.Shop})
 		
-		res.status(200).json({success: true, orders:shop.orders})
+		res.status(200).json({success: true, orders:orders})
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ success: false, msg: 'Internal server error' })

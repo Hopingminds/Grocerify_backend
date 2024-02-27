@@ -104,12 +104,6 @@ export const ShopSchema = new mongoose.Schema({
         type:Boolean,
         default: false
     },
-    orders:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Orders'
-        }
-    ],
     visitors:{
         type: Number,
         default: 0

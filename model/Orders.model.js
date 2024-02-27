@@ -12,6 +12,10 @@ export const OrdersSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
 		ref: UserModel,
     },
+	shop:{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'shops',
+	},
 	status: {
 		type: String,
 		default: 'ordered',
