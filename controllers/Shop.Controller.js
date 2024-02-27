@@ -148,14 +148,66 @@ export async function ordersbyshop(req, res) {
 				.json({ success: false, msg: 'Seller not found' })
 		}
 
-		const shop = await shopModel.find({_id: sellerData.Shop}).populate('orders')
+		const shop = await shopModel.findOne({_id: sellerData.Shop}).populate('orders')
 		if (!shop) {
 			return res
 				.status(404)
 				.json({ success: false, msg: 'Shop not found' })
 		}
 		
-		res.status(200).json({success: true, orders:shop[0].orders})
+		res.status(200).json({success: true, orders:shop.orders})
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ success: false, msg: 'Internal server error' })
+	}
+}
+
+/** POST: https://loclhost:8080/api/addstorevisit
+ * body: {
+	"shopID": "65d7338168bd195c22bc4bd0"
+	}
+ */
+export async function addvisit(req, res) {
+	try {
+		let {shopID} = req.body
+		const shop = await shopModel.findOne({_id: shopID})
+		if (!shop) {
+			res.status(500).json({ success: false, msg: 'Shop not found.' })
+		}
+		let visitors = shop.visitors +=1
+		await shopModel.updateOne({ _id: shopID }, { visitors }) 
+		res.status(200).json({ success: true, visitors })
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({ success: false, msg: 'Internal server error' })
+	}
+}
+
+/** GET: http://localhost:8080/api/visitsbyshop 
+	@param: {
+		"header" : "Bearer <token>"
+	}
+*/
+export async function visitsbyshop(req, res) {
+	const { sellerID } = req.seller
+	try {
+		const sellerData = await SellerModel
+			.findOne({ _id: sellerID })
+
+		if (!sellerData) {
+			return res
+				.status(404)
+				.json({ success: false, msg: 'Seller not found' })
+		}
+
+		const shop = await shopModel.findOne({_id: sellerData.Shop})
+		if (!shop) {
+			return res
+				.status(404)
+				.json({ success: false, msg: 'Shop not found' })
+		}
+		
+		res.status(200).json({success: true, visitors:shop.visitors})
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ success: false, msg: 'Internal server error' })

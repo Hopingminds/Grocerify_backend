@@ -109,7 +109,11 @@ export const ShopSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Orders'
         }
-    ]
+    ],
+    visitors:{
+        type: Number,
+        default: 0
+    }
 });
 
 export default mongoose.model.Shops || mongoose.model('Shop', ShopSchema);

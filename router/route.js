@@ -14,6 +14,7 @@ import SellerAuth, { sellerlocalVariables } from '../middleware/sellerauth.js'
 
 
 /** POST Methods */
+
 router.route('/register').post(controller.register)
 router.route('/addaddress').post(Auth, controller.addAddress); // is use to add user address
 router.route('/registerMail').post(registerMail) // register mail
@@ -37,11 +38,16 @@ router.route('/addsubcategory').post(CategoriesController.addsubcategory); // is
 //-- POST Shop
 router.route('/addshop').post(ShopController.registerShop)
 router.route('/approveshop').post(ShopController.approveshop)
+router.route('/addstorevisit').post(ShopController.addvisit) //addstorevisit
 // -- POST Seller
 router.route('/registerseller').post(SellerController.registerseller)
 router.route('/sellerloginwithemail').post(SellerController.verifySeller,SellerController.sellerLoginWithEmail) // login in app with email
 router.route('/sellerloginwithmobile').post(SellerController.verifySeller,SellerController.SellerLoginWithMobile) // login in app with mobile
+
+
+
 /** GET Methods */
+
 router.route('/user').get(controller.verifyUser, controller.getUser) // user with username
 router.route('/user/address/:addressid').get(controller.verifyUser, controller.getaddressbyid) // reset all variables
 router.route('/generateRestPwdOTP').get(controller.verifyUser, localVariables, controller.generateRestPwdOTP) //generate random OTP
@@ -60,21 +66,26 @@ router.route('/categories').get(CategoriesController.getcategories) //get all ca
 //-- GET Seller
 router.route('/seller').get(SellerController.verifySeller, SellerController.getSeller) // user with username
 //-- GET Stores
-router.route('/ordersbyshop').get(SellerAuth, ShopController.ordersbyshop)
 router.route('/shops').get(ShopController.getShops) //getAllShops
+router.route('/ordersbyshop').get(SellerAuth, ShopController.ordersbyshop)
+router.route('/visitsbyshop').get(SellerAuth, ShopController.visitsbyshop)
 
-// mobile OTP Verification
+
+/** mobile OTP Verification */ 
+
 router.route('/generateMobileOTP').post(generateMobileOTP) // generate mobileOTP
 router.route('/verifyMobileOTP').post(verifyMobileOTP) // generate mobileOTP
 router.route('/verifySellerLoginMobileOTP').post(verifySellerLoginMobileOTP) // verify seller login with otp
 
 
 /** PUT Methods */
+
 router.route('/updateuser').put(Auth, controller.updateUser); // is use to update the user profile
 router.route('/updateaddress').put(Auth, controller.updateAddress); // is use to update user address
 router.route('/resetPassword').put(controller.verifyUser, controller.resetPassword) // used to reset password
 
 /** DELETE Methods */
+
 router.route('/removeaddress').delete(Auth, controller.removeAddress); // is use to remove user address
 
 export default router
