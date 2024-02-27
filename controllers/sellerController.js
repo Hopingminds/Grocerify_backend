@@ -11,13 +11,13 @@ export async function verifySeller(req, res, next) {
 		const { email, mobile } = req.method == 'GET' ? req.query : req.body
 		// check the seller existance
 		if (email && !mobile) {
-			let exit = await sellerModel.findOne({ OwnerEmail:email })
+			let exit = await sellerModel.findOne({ OwnerEmail: email })
 			if (!exit)
 				return res.status(404).send({ error: "Can't find seller!" })
 			req.sellerID = exit._id
 			next()
 		} else if (!email && mobile) {
-			let exit = await sellerModel.findOne({ OwnerMobile:mobile })
+			let exit = await sellerModel.findOne({ OwnerMobile: mobile })
 			if (!exit)
 				return res.status(404).send({ error: "Can't find seller!" })
 			req.sellerID = exit._id
@@ -26,6 +26,16 @@ export async function verifySeller(req, res, next) {
 	} catch (error) {
 		return res.status(404).send({ error: 'Authentication Error' })
 	}
+}
+
+// helper function
+function isStorePresent(data, storeId) {
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].store && data[i].store.toString() === storeId.toString()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /** POST: http://localhost:8080/api/registerseller
@@ -43,8 +53,17 @@ export async function verifySeller(req, res, next) {
 */
 export async function registerseller(req, res) {
 	try {
-		const { OwnerEmail, OwnerName, OwnerMobile, OwnerProfile, password, OwnerDOB, OwnerAddress, Aadhar, PanCard } =
-			req.body
+		const {
+			OwnerEmail,
+			OwnerName,
+			OwnerMobile,
+			OwnerProfile,
+			password,
+			OwnerDOB,
+			OwnerAddress,
+			Aadhar,
+			PanCard,
+		} = req.body
 		// check for existing mobile number
 		const existMobile = sellerModel.findOne({ OwnerMobile }).exec()
 
@@ -58,11 +77,17 @@ export async function registerseller(req, res) {
 		])
 
 		if (mobileExist) {
-			return res.status(400).send({success: false, msg: 'User with mobile already exsist.'})
+			return res.status(400).send({
+				success: false,
+				msg: 'User with mobile already exsist.',
+			})
 		}
 
 		if (emailExist) {
-			return res.status(400).send({success: false, msg: 'User with email already exsist.'})
+			return res.status(400).send({
+				success: false,
+				msg: 'User with email already exsist.',
+			})
 		}
 		if (password) {
 			const hashedPassword = await bcrypt.hash(password, 10)
@@ -75,16 +100,20 @@ export async function registerseller(req, res) {
 				OwnerDOB,
 				OwnerAddress,
 				Aadhar,
-				PanCard
+				PanCard,
 			})
 
 			// Save the seller
 			await seller.save()
 			// Send response with _id and email
-			return res.status(201).send({success: true, msg: 'Seller Registred Successfully.'})
+			return res
+				.status(201)
+				.send({ success: true, msg: 'Seller Registred Successfully.' })
 		}
 	} catch (error) {
-		return res.status(500).send({success: false, msg: 'Internal Server Error.'})
+		return res
+			.status(500)
+			.send({ success: false, msg: 'Internal Server Error.' })
 	}
 }
 
@@ -118,16 +147,31 @@ export async function getSeller(req, res) {
 /** POST: http://localhost:8080/api/addstoreproducts 
  * body: {
         "email": "sahilkumar142002@gmail.com",
-        "productIDs": [
-            "65d98e068f61d2603fe62548",
-            "65d98e068f61d2603fe62549",
-            "65d98e068f61d2603fe6254c"
+        "products": [
+			{
+				"productID": "65d98e068f61d2603fe62548",
+				"variants1_mrp_price": 1340,
+				"variants1_discount_per": 10
+				"stock": '10'
+			},
+			{
+				"productID": "65d98e068f61d2603fe62549",
+				"variants1_mrp_price": 1340,
+				"variants1_discount_per": 10
+				"stock": '10'
+			},
+			{
+				"productID": "65d98e068f61d2603fe6254c",
+				"variants1_mrp_price": 1340,
+				"variants1_discount_per": 10
+				"stock": '10'
+			},
         ]
     }
 */
 export async function addstoreproducts(req, res) {
 	let sellerID = req.sellerID
-	let { productIDs } = req.body // Assuming productIDs is an array of product IDs
+	let { products } = req.body // Assuming productIDs is an array of product IDs
 	let alredypresent = []
 	try {
 		const sellerData = await sellerModel.findOne({ _id: sellerID })
@@ -146,37 +190,41 @@ export async function addstoreproducts(req, res) {
 				.json({ success: false, msg: 'Seller has no registered shop.' })
 		}
 
-		for (const productID of productIDs) {
-			const product = await ProductsModel.findOne({ _id: productID })
-
+		for (const product_data of products) {
+			const product = await ProductsModel.findOne({
+				_id: product_data.productID,
+			})
 			if (!product) {
-				return res
-					.status(404)
-					.json({
-						success: false,
-						msg: `Product with ID ${productID} not found`,
-					})
-			}
-			if (product.stores.includes(shop._id)) {
-				alredypresent.push(productID)
-			} else {
-				product.stores.push(shop._id)
-				await product.save().then((data) => {
-					try {
-						shop.products.push(data._id)
-					} catch (err) {
-						return res
-							.status(500)
-							.json({
-								success: false,
-								msg: 'Internal server error',
-							})
-					}
+				return res.status(404).json({
+					success: false,
+					msg: `Product with ID ${product_data.productID} not found`,
 				})
+			}
+			if (isStorePresent(product.stores,shop._id)) {
+				alredypresent.push(product_data.productID)
+			} else {
+				product.stores.push({
+					store: shop._id,
+					variants1_mrp_price: product_data.variants1_mrp_price,
+					variants1_discount_per: product_data.variants1_discount_per,
+					stock: product_data.stock,
+				})
+				// await product.save().then((data) => {
+				// 	try {
+				// 		shop.products.push(data._id)
+				// 	} catch (err) {
+				// 		return res
+				// 			.status(500)
+				// 			.json({
+				// 				success: false,
+				// 				msg: 'Internal server error',
+				// 			})
+				// 	}
+				// })
 			}
 		}
 
-		await shop.save()
+		// await shop.save()
 
 		res.status(200).json({
 			success: true,
@@ -239,14 +287,13 @@ export async function productsbystore(req, res) {
 		if (!shopWithProducts) {
 			return res.status(404).send('Shop not found')
 		}
-		let {orders, ...rest} = shopWithProducts.toObject()
-		res.status(200).json({shop:rest})
+		let { orders, ...rest } = shopWithProducts.toObject()
+		res.status(200).json({ shop: rest })
 	} catch (err) {
 		console.error(err)
 		res.status(500).send('Internal Server Error')
 	}
 }
-
 
 // logins
 
@@ -259,7 +306,8 @@ export async function productsbystore(req, res) {
 export async function sellerLoginWithEmail(req, res) {
 	const { email, password } = req.body
 	try {
-		sellerModel.findOne({ OwnerEmail:email })
+		sellerModel
+			.findOne({ OwnerEmail: email })
 			.then((seller) => {
 				bcrypt
 					.compare(password, seller.password)
@@ -267,7 +315,7 @@ export async function sellerLoginWithEmail(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Wrong password" })
+								.send({ error: 'Wrong password' })
 
 						// create jwt token
 						const token = jwt.sign(
@@ -275,7 +323,7 @@ export async function sellerLoginWithEmail(req, res) {
 								sellerID: seller._id,
 								email: seller.OwnerEmail,
 								mobile: seller.OwnerMobile,
-								shop: seller?.Shop || false
+								shop: seller?.Shop || false,
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -285,7 +333,7 @@ export async function sellerLoginWithEmail(req, res) {
 							email: seller.OwnerEmail,
 							token,
 							shop: seller?.Shop || false,
-							verified: seller.Verified
+							verified: seller.Verified,
 						})
 					})
 					.catch((error) => {
@@ -311,7 +359,8 @@ export async function sellerLoginWithEmail(req, res) {
 export async function SellerLoginWithMobile(req, res) {
 	const { mobile, password } = req.body
 	try {
-		sellerModel.findOne({ OwnerMobile:mobile })
+		sellerModel
+			.findOne({ OwnerMobile: mobile })
 			.then((seller) => {
 				bcrypt
 					.compare(password, seller.password)
@@ -319,7 +368,7 @@ export async function SellerLoginWithMobile(req, res) {
 						if (!passwordCheck)
 							return res
 								.status(400)
-								.send({ error: "Wrong password" })
+								.send({ error: 'Wrong password' })
 
 						// create jwt token
 						const token = jwt.sign(
@@ -327,7 +376,7 @@ export async function SellerLoginWithMobile(req, res) {
 								sellerID: seller._id,
 								email: seller.OwnerEmail,
 								mobile: seller.OwnerMobile,
-								shop: seller?.Shop || false
+								shop: seller?.Shop || false,
 							},
 							ENV.JWT_SECRET,
 							{ expiresIn: '24h' }
@@ -337,7 +386,7 @@ export async function SellerLoginWithMobile(req, res) {
 							email: seller.OwnerEmail,
 							token,
 							shop: seller?.Shop || false,
-							verified: seller.Verified
+							verified: seller.Verified,
 						})
 					})
 					.catch((error) => {

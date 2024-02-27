@@ -31,29 +31,29 @@ export const productSchema = new mongoose.Schema({
     "sub_category_name":{
 		type: String,
 	},
+	"variants1_unit_type":{
+		type: String,
+	},
     "variants1_weight":{
 		type: String,
 	},
-    "variants1_mrp_price":{
-		type: Number,
-	},
-    "variants1_discount%":{
-		type: Number,
-	},
-    "variants1_unit_type":{
-		type: String,
-	},
-    "rating":{
-		type: Number,
-	},
-	"stock":{
-		type: String,
-		default: 10
-	},
-	"stores":[
-		{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: ShopModel
+	"stores":[{
+			store:{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: ShopModel
+			},
+			"variants1_mrp_price":{
+				type: Number,
+			},
+			"variants1_discount_per":{
+				type: Number,
+			},
+			"rating":{
+				type: Number,
+			},
+			"stock":{
+				type: Number
+			},
 		}
 	]
 })
