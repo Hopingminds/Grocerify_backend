@@ -148,8 +148,8 @@ export async function getorders(req, res) {
 	const { userID } = req.user
 	try {
 		// Find the cart document and populate the products field with product data
-		const orders = await OrdersModel.findOne({ _id: userID }).populate(
-			'Orders.product'
+		const orders = await OrdersModel.find({ ordered_by: userID }).populate(
+			'product'
 		)
 
 		if (!orders) {
@@ -158,7 +158,7 @@ export async function getorders(req, res) {
 				.json({ success: false, message: 'No orders history!' })
 		}
 
-		res.status(200).json({ success: true, orders: orders.Orders })
+		res.status(200).json({ success: true, orders: orders })
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({

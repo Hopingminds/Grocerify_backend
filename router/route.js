@@ -60,7 +60,7 @@ router.route('/categories').get(CategoriesController.getcategories) //get all ca
 //-- GET Seller
 router.route('/seller').get(SellerController.verifySeller, SellerController.getSeller) // user with username
 //-- GET Stores
-router.route('/shop').get(SellerController.verifySeller, ShopController.getShop)
+router.route('/ordersbyshop').get(SellerAuth, ShopController.ordersbyshop)
 router.route('/shops').get(ShopController.getShops) //getAllShops
 
 // mobile OTP Verification

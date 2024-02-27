@@ -131,13 +131,16 @@ export async function getShops(req, res) {
 	}
 }
 
-// GET: http://localhost:8080/api/getShop
-export async function getShop(req, res) {
-	let sellerID = req.sellerID
+/** GET: http://localhost:8080/api/ordersbyshop 
+	@param: {
+		"header" : "Bearer <token>"
+	}
+*/
+export async function ordersbyshop(req, res) {
+	const { sellerID } = req.seller
 	try {
 		const sellerData = await SellerModel
 			.findOne({ _id: sellerID })
-			.populate('Shop')
 
 		if (!sellerData) {
 			return res
@@ -152,7 +155,7 @@ export async function getShop(req, res) {
 				.json({ success: false, msg: 'Shop not found' })
 		}
 		
-		res.status(200).json({success: true, data:shop})
+		res.status(200).json({success: true, orders:shop[0].orders})
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ success: false, msg: 'Internal server error' })

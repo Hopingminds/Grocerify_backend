@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken';
+import ENV from '../config.js'
+
 export default async function SellerAuth(req,res,next) {
     try {
         // access authorize header to validate request
@@ -6,10 +9,11 @@ export default async function SellerAuth(req,res,next) {
         const decodedToken = await jwt.verify(token, ENV.JWT_SECRET);
 
         // res.json(decodedToken)
-        req.user = decodedToken;
+        req.seller = decodedToken;
 
         next()
     } catch (error) {
+        console.log(error);
         res.status(401).json({ error : "Authentication Failed!"})
     }
 }
