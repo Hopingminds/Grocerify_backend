@@ -11,6 +11,10 @@ export const WishlistSchema = new mongoose.Schema({
                 type: mongoose.Schema.Types.ObjectId,
                 ref: ProductsModel,
             },
+            shopID:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'shops'
+            }
         }
     ]
 }, { _id: false });

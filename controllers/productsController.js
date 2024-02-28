@@ -90,7 +90,7 @@ body: {
 export async function addToCart(req, res) {
 	let userID = req.userID
 	try {
-        const { productid, quantity } = req.body;
+        const { productid, quantity, shopID } = req.body;
 		
 		// Fetch the product data
 		const product = await productModel.findById(productid);
@@ -111,7 +111,7 @@ export async function addToCart(req, res) {
         if (existingProductIndex !== -1) {
             cart.products[existingProductIndex].quantity += quantity || 1;
         } else {
-            cart.products.push({ product:product._id, quantity });
+            cart.products.push({ product:product._id, quantity, shopID });
         }
 
         await cart.save();
@@ -236,7 +236,7 @@ export async function addtowishlist(req, res) {
         const existingProductIndex = wishlist.products.findIndex(p => p.product.equals(product._id));
 
         if (existingProductIndex == -1) {
-            wishlist.products.push({ product:product._id});
+            wishlist.products.push({ product:product._id, shopID});
         }
 
         await wishlist.save();
@@ -259,7 +259,7 @@ body: {
 export async function removeFromWishlist(req, res) {
     let userID = req.userID;
     try {
-        const { productid } = req.body;
+        const { productid, shopID } = req.body;
 
         // Find the wishlist for the user
         let wishlist = await wishlistModel.findOne({ _id: userID }).populate('products.product');

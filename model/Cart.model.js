@@ -14,6 +14,10 @@ export const CartSchema = new mongoose.Schema({
             quantity: {
                 type: Number,
                 default: 1
+            },
+            shopID:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'shops'
             }
         }
     ]
